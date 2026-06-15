@@ -18,11 +18,11 @@ body{background:#1e293b;font-family:'Poppins',sans-serif;display:flex;flex-direc
 .src{position:absolute;bottom:40px;left:70px;font-size:17px;color:#94a3b8;font-style:italic;font-weight:300}
 
 /* COVER */
-.cover{padding:90px 70px}
-.cover-dash{width:56px;height:5px;background:var(--navy);margin-bottom:32px}
-.cover-h1{font-size:120px;font-weight:900;color:var(--navy);line-height:1;letter-spacing:-3px}
-.cover-h2{font-size:80px;font-weight:700;color:var(--blue);margin-top:20px}
-.cover-meta{font-size:30px;color:var(--gray);font-weight:400;margin-top:16px}
+.cover{padding:70px 70px}
+.cover-dash{width:72px;height:6px;background:var(--navy);margin-bottom:40px}
+.cover-h1{font-size:150px;font-weight:900;color:var(--navy);line-height:0.95;letter-spacing:-4px}
+.cover-h2{font-size:100px;font-weight:700;color:var(--blue);margin-top:24px}
+.cover-meta{font-size:38px;color:var(--gray);font-weight:400;margin-top:20px}
 .cover-star{position:absolute;top:80px;right:70px;color:var(--blue);font-size:30px}
 
 /* BIG NUMBER */
@@ -34,7 +34,7 @@ body{background:#1e293b;font-family:'Poppins',sans-serif;display:flex;flex-direc
 .bn-tag{font-size:24px;font-weight:600;color:var(--gray);letter-spacing:2px;text-transform:uppercase;margin-top:8px}
 
 /* HEADER */
-.shd{padding:60px 70px 0}
+.shd{padding:60px 0 0}
 .shd .sub{font-size:22px;color:var(--gray);font-weight:400;margin-bottom:6px}
 .shd .ttl{font-size:42px;font-weight:700;color:var(--navy);line-height:1.15}
 
@@ -104,6 +104,12 @@ td.dim{color:var(--gray);font-weight:400}
 
 /* AREA SLIDES */
 
+/* ENV TABLE ENHANCEMENT */
+#t-env thead tr{background:var(--navy)}
+#t-env thead th{color:#fff;border-bottom:none;font-size:22px}
+#t-env thead th:first-child{border-radius:0}
+#t-env tbody tr:last-child td{border-bottom:none}
+
 /* COPYRIGHT */
 .copyright{position:absolute;bottom:12px;right:20px;font-size:13px;color:#c0ccd9;font-weight:400;letter-spacing:0.2px;font-style:italic}
 
@@ -163,7 +169,7 @@ td.dim{color:var(--gray);font-weight:400}
 
     <!-- MoM -->
     <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-right:20px">
-      <div style="font-size:22px;font-weight:700;color:var(--navy);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px">Month over Month</div>
+      <div style="font-size:28px;font-weight:700;color:var(--navy);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px">Month over Month</div>
       <div id="s4-dir" style="font-size:14px;font-weight:600;letter-spacing:0.4px;text-transform:uppercase;margin-bottom:10px;color:#b91c1c">▼ DECLINE VS LAST MONTH</div>
       <div id="s4-circle" class="pct-circle red" style="width:200px;height:200px;margin:0">
         <span id="s4-num" class="pct-num red" style="font-size:58px">−0.6%</span>
@@ -176,7 +182,7 @@ td.dim{color:var(--gray);font-weight:400}
 
     <!-- YoY -->
     <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-left:20px">
-      <div style="font-size:22px;font-weight:700;color:var(--navy);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px">Year over Year</div>
+      <div style="font-size:28px;font-weight:700;color:var(--navy);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px">Year over Year</div>
       <div id="s6-dir" style="font-size:14px;font-weight:600;letter-spacing:0.4px;text-transform:uppercase;margin-bottom:10px;color:#1a7a3c">▲ GROWTH VS LAST YEAR</div>
       <div id="s6-circle" class="pct-circle grn" style="width:200px;height:200px;margin:0">
         <span id="s6-num" class="pct-num grn" style="font-size:58px">+7.4%</span>
@@ -191,7 +197,7 @@ td.dim{color:var(--gray);font-weight:400}
 <div class="lbl">Slide 4 — MoM by Region</div>
 <div class="slide chart-slide" id="slide-05">
   <div class="top-bar"></div>
-  <div class="shd" style="padding:60px 70px 32px"><div class="sub">"Product Manager" jobs</div><div class="ttl">Month over Month by Region</div></div>
+  <div class="shd" style="padding:60px 0 32px"><div class="sub">"Product Manager" jobs</div><div class="ttl">Month over Month by Region</div></div>
   <div class="chart-area"><canvas id="c-mom" role="img" aria-label="MoM by region"></canvas></div>
   <div class="src" id="s5-src">Source: LinkedIn as of 1 June 2026, compared to 4 May 2026</div>
 </div>
@@ -200,7 +206,7 @@ td.dim{color:var(--gray);font-weight:400}
 <div class="lbl">Slide 5 — YoY by Region</div>
 <div class="slide chart-slide" id="slide-07">
   <div class="top-bar"></div>
-  <div class="shd" style="padding:60px 70px 32px"><div class="sub">"Product Manager" jobs</div><div class="ttl">Year over Year by Region</div></div>
+  <div class="shd" style="padding:60px 0 32px"><div class="sub">"Product Manager" jobs</div><div class="ttl">Year over Year by Region</div></div>
   <div class="chart-area"><canvas id="c-yoy" role="img" aria-label="YoY by region" width="1504" height="1280" style="display: block; box-sizing: border-box; height: 800px; width: 940px;">YoY chart</canvas></div>
   <div class="src" id="s7-src">Source: LinkedIn as of 1 June 2026, compared to 2 June 2025</div>
 </div>
@@ -208,7 +214,7 @@ td.dim{color:var(--gray);font-weight:400}
 <div class="lbl">Slide 6 — Worldwide T12M</div>
 <div class="slide chart-slide" id="slide-08">
   <div class="top-bar"></div>
-  <div class="shd" style="padding:60px 70px 20px"><div class="sub">Worldwide jobs for</div><div class="ttl">"Product Manager"</div></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">Worldwide jobs for</div><div class="ttl">"Product Manager"</div></div>
   <div class="chart-area"><canvas id="c-ww" role="img" aria-label="WW T12M" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;">WW T12M</canvas></div>
   <div class="src">Source: LinkedIn T12M</div>
 </div>
@@ -216,7 +222,7 @@ td.dim{color:var(--gray);font-weight:400}
 <div class="lbl">Slide 7 — By Seniority Level</div>
 <div class="slide tbl-slide" id="slide-09">
   <div class="top-bar"></div>
-  <div class="shd" style="padding:60px 70px 0"><div class="sub">Worldwide PM jobs</div><div class="ttl">By seniority level</div></div>
+  <div class="shd" style="padding:60px 0 0"><div class="sub">Worldwide PM jobs</div><div class="ttl">By seniority level</div></div>
   <div class="tbl-wrap">
     <div style="padding:0 0"><table id="t-levels"><thead><tr><th>Level</th><th>Listings</th><th>MoM</th><th>T6M</th><th>YoY</th></tr></thead><tbody></tbody></table></div>
   </div>
@@ -226,8 +232,9 @@ td.dim{color:var(--gray);font-weight:400}
 <div class="lbl">Slide 8 — Level Charts 2×2</div>
 <div class="slide x2-slide" id="slide-10">
   <div class="top-bar"></div>
-  <div class="shd" style="padding:60px 70px 0">
-    <div class="sub">Worldwide PM jobs by level</div>
+  <div class="shd" style="padding:60px 0 0">
+    <div class="sub">Worldwide PM jobs</div>
+    <div class="ttl">By level — 2025 vs 2026</div>
     <div class="x2-legend" style="padding:0;margin-top:8px">
       <div class="x2-leg-item"><div class="x2-leg-dot" style="background:#4e9af1"></div>2025</div>
       <div class="x2-leg-item"><div class="x2-leg-dot" style="background:#0d2449"></div>2026</div>
@@ -245,9 +252,9 @@ td.dim{color:var(--gray);font-weight:400}
 <div class="lbl">Slide 9 — Work Environment</div>
 <div class="slide tbl-slide" id="slide-11">
   <div class="top-bar"></div>
-  <div class="shd" style="padding:60px 70px 0"><div class="sub">Worldwide PM jobs</div><div class="ttl">Remote vs Hybrid vs On-site</div></div>
+  <div class="shd" style="padding:60px 0 0"><div class="sub">Worldwide PM jobs</div><div class="ttl">Remote vs Hybrid vs On-site</div></div>
   <div class="tbl-wrap">
-    <div style="padding:0 0"><table id="t-env"><thead><tr><th>Type</th><th>Listings</th><th>MoM</th><th>T6M</th><th>YoY</th></tr></thead><tbody></tbody></table></div>
+    <div style="padding:0 0;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(13,36,73,0.10)"><table id="t-env" style="border-collapse:separate;border-spacing:0"><thead><tr><th>Type</th><th>Listings</th><th>MoM</th><th>T6M</th><th>YoY</th></tr></thead><tbody></tbody></table></div>
   </div>
   <div class="src" id="s11-src">Source: LinkedIn as of 1 June 2026</div>
 </div>
@@ -255,7 +262,7 @@ td.dim{color:var(--gray);font-weight:400}
 <div class="lbl">Slide 10 — Environment Stacked T12M</div>
 <div class="slide chart-slide" id="slide-12">
   <div class="top-bar"></div>
-  <div class="shd" style="padding:60px 70px 8px"><div class="sub">Remote vs Hybrid vs On-site</div><div class="ttl">Worldwide T12M</div></div>
+  <div class="shd" style="padding:60px 0 8px"><div class="sub">Remote vs Hybrid vs On-site</div><div class="ttl">Worldwide T12M</div></div>
 
   <div class="chart-area"><canvas id="c-stacked" role="img" aria-label="Env stacked T12M" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;">Env T12M</canvas></div>
   <div class="src">Source: LinkedIn T12M</div>
@@ -298,7 +305,7 @@ td.dim{color:var(--gray);font-weight:400}
 <div class="lbl">Slide 15 — United States T12M</div>
 <div class="slide area-slide" id="slide-17">
   <div class="top-bar"></div>
-  <div class="shd" style="padding:60px 70px 20px"><div class="sub">United States jobs for</div><div class="ttl">"Product Manager"</div></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">United States jobs for</div><div class="ttl">"Product Manager"</div></div>
   <div class="chart-area"><canvas id="c-us" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
   <div class="src">Source: LinkedIn as of 1 June 2026</div>
 </div>
@@ -306,7 +313,7 @@ td.dim{color:var(--gray);font-weight:400}
 <div class="lbl">Slide 16 — APAC T12M</div>
 <div class="slide area-slide" id="slide-18">
   <div class="top-bar"></div>
-  <div class="shd" style="padding:60px 70px 20px"><div class="sub">APAC jobs for</div><div class="ttl">"Product Manager"</div></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">APAC jobs for</div><div class="ttl">"Product Manager"</div></div>
   <div class="chart-area"><canvas id="c-apac" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
   <div class="src">Source: LinkedIn as of 1 June 2026</div>
 </div>
@@ -314,7 +321,7 @@ td.dim{color:var(--gray);font-weight:400}
 <div class="lbl">Slide 17 — Europe (EEA) T12M</div>
 <div class="slide area-slide" id="slide-19">
   <div class="top-bar"></div>
-  <div class="shd" style="padding:60px 70px 20px"><div class="sub">Europe (EEA) jobs for</div><div class="ttl">"Product Manager"</div></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">Europe (EEA) jobs for</div><div class="ttl">"Product Manager"</div></div>
   <div class="chart-area"><canvas id="c-eea" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
   <div class="src">Source: LinkedIn as of 1 June 2026</div>
 </div>
@@ -322,7 +329,7 @@ td.dim{color:var(--gray);font-weight:400}
 <div class="lbl">Slide 18 — United Kingdom T12M</div>
 <div class="slide area-slide" id="slide-20">
   <div class="top-bar"></div>
-  <div class="shd" style="padding:60px 70px 20px"><div class="sub">United Kingdom jobs for</div><div class="ttl">"Product Manager"</div></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">United Kingdom jobs for</div><div class="ttl">"Product Manager"</div></div>
   <div class="chart-area"><canvas id="c-uk" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
   <div class="src">Source: LinkedIn as of 1 June 2026</div>
 </div>
@@ -330,7 +337,7 @@ td.dim{color:var(--gray);font-weight:400}
 <div class="lbl">Slide 19 — Canada T12M</div>
 <div class="slide area-slide" id="slide-21">
   <div class="top-bar"></div>
-  <div class="shd" style="padding:60px 70px 20px"><div class="sub">Canada jobs for</div><div class="ttl">"Product Manager"</div></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">Canada jobs for</div><div class="ttl">"Product Manager"</div></div>
   <div class="chart-area"><canvas id="c-ca" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
   <div class="src">Source: LinkedIn as of 1 June 2026</div>
 </div>
@@ -338,7 +345,7 @@ td.dim{color:var(--gray);font-weight:400}
 <div class="lbl">Slide 20 — Latin America T12M</div>
 <div class="slide area-slide" id="slide-22">
   <div class="top-bar"></div>
-  <div class="shd" style="padding:60px 70px 20px"><div class="sub">Latin America jobs for</div><div class="ttl">"Product Manager"</div></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">Latin America jobs for</div><div class="ttl">"Product Manager"</div></div>
   <div class="chart-area"><canvas id="c-latam" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
   <div class="src">Source: LinkedIn as of 1 June 2026</div>
 </div>
@@ -346,7 +353,7 @@ td.dim{color:var(--gray);font-weight:400}
 <div class="lbl">Slide 21 — Middle East T12M</div>
 <div class="slide area-slide" id="slide-23">
   <div class="top-bar"></div>
-  <div class="shd" style="padding:60px 70px 20px"><div class="sub">Middle East jobs for</div><div class="ttl">"Product Manager"</div></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">Middle East jobs for</div><div class="ttl">"Product Manager"</div></div>
   <div class="chart-area"><canvas id="c-me" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
   <div class="src">Source: LinkedIn as of 1 June 2026</div>
 </div>
@@ -354,7 +361,7 @@ td.dim{color:var(--gray);font-weight:400}
 <div class="lbl">Slide 22 — Assoc / Jr PM T12M</div>
 <div class="slide area-slide" id="slide-24">
   <div class="top-bar"></div>
-  <div class="shd" style="padding:60px 70px 20px"><div class="sub">WW PM jobs by level</div><div class="ttl">Assoc. / Jr. PM</div></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">WW PM jobs by level</div><div class="ttl">Assoc. / Jr. PM</div></div>
   <div class="chart-area"><canvas id="c-assoc" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
   <div class="src">Source: LinkedIn as of 1 June 2026</div>
 </div>
@@ -362,7 +369,7 @@ td.dim{color:var(--gray);font-weight:400}
 <div class="lbl">Slide 23 — Product Manager T12M</div>
 <div class="slide area-slide" id="slide-25">
   <div class="top-bar"></div>
-  <div class="shd" style="padding:60px 70px 20px"><div class="sub">WW PM jobs by level</div><div class="ttl">Product Manager</div></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">WW PM jobs by level</div><div class="ttl">Product Manager</div></div>
   <div class="chart-area"><canvas id="c-pm" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
   <div class="src">Source: LinkedIn as of 1 June 2026</div>
 </div>
@@ -370,7 +377,7 @@ td.dim{color:var(--gray);font-weight:400}
 <div class="lbl">Slide 24 — Senior PM T12M</div>
 <div class="slide area-slide" id="slide-26">
   <div class="top-bar"></div>
-  <div class="shd" style="padding:60px 70px 20px"><div class="sub">WW PM jobs by level</div><div class="ttl">Senior PM</div></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">WW PM jobs by level</div><div class="ttl">Senior PM</div></div>
   <div class="chart-area"><canvas id="c-sr" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
   <div class="src">Source: LinkedIn as of 1 June 2026</div>
 </div>
@@ -378,7 +385,7 @@ td.dim{color:var(--gray);font-weight:400}
 <div class="lbl">Slide 25 — Product Leader T12M</div>
 <div class="slide area-slide" id="slide-27">
   <div class="top-bar"></div>
-  <div class="shd" style="padding:60px 70px 20px"><div class="sub">WW PM jobs by level</div><div class="ttl">Product Leader</div></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">WW PM jobs by level</div><div class="ttl">Product Leader</div></div>
   <div class="chart-area"><canvas id="c-ldr" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
   <div class="src">Source: LinkedIn as of 1 June 2026</div>
 </div>
@@ -386,7 +393,7 @@ td.dim{color:var(--gray);font-weight:400}
 <div class="lbl">Slide 26 — On-site T12M</div>
 <div class="slide area-slide" id="slide-28">
   <div class="top-bar"></div>
-  <div class="shd" style="padding:60px 70px 20px"><div class="sub">WW PM jobs by environment</div><div class="ttl">On-site</div></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">WW PM jobs by environment</div><div class="ttl">On-site</div></div>
   <div class="chart-area"><canvas id="c-onsite" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
   <div class="src">Source: LinkedIn as of 1 June 2026</div>
 </div>
@@ -394,7 +401,7 @@ td.dim{color:var(--gray);font-weight:400}
 <div class="lbl">Slide 27 — Hybrid T12M</div>
 <div class="slide area-slide" id="slide-29">
   <div class="top-bar"></div>
-  <div class="shd" style="padding:60px 70px 20px"><div class="sub">WW PM jobs by environment</div><div class="ttl">Hybrid</div></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">WW PM jobs by environment</div><div class="ttl">Hybrid</div></div>
   <div class="chart-area"><canvas id="c-hybrid" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
   <div class="src">Source: LinkedIn as of 1 June 2026</div>
 </div>
@@ -402,7 +409,7 @@ td.dim{color:var(--gray);font-weight:400}
 <div class="lbl">Slide 28 — Remote T12M</div>
 <div class="slide area-slide" id="slide-30">
   <div class="top-bar"></div>
-  <div class="shd" style="padding:60px 70px 20px"><div class="sub">WW PM jobs by environment</div><div class="ttl">Remote</div></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">WW PM jobs by environment</div><div class="ttl">Remote</div></div>
   <div class="chart-area"><canvas id="c-remote" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
   <div class="src">Source: LinkedIn as of 1 June 2026</div>
 </div>
