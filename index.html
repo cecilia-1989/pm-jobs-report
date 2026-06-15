@@ -20,7 +20,7 @@ body{background:#1e293b;font-family:'Poppins',sans-serif;display:flex;flex-direc
 /* COVER */
 .cover{padding:70px 70px}
 .cover-dash{width:72px;height:6px;background:var(--navy);margin-bottom:40px}
-.cover-h1{font-size:150px;font-weight:900;color:var(--navy);line-height:0.95;letter-spacing:-4px}
+.cover-h1{font-size:118px;font-weight:900;color:var(--navy);line-height:1;letter-spacing:-3px}
 .cover-h2{font-size:100px;font-weight:700;color:var(--blue);margin-top:24px}
 .cover-meta{font-size:38px;color:var(--gray);font-weight:400;margin-top:20px}
 .cover-star{position:absolute;top:80px;right:70px;color:var(--blue);font-size:30px}
@@ -79,7 +79,7 @@ td.dim{color:var(--gray);font-weight:400}
 .neg{color:#991b1b!important;font-weight:700!important}
 
 /* 2x2 */
-.x2-slide{padding:60px 70px 100px;display:flex;flex-direction:column}
+.x2-slide{padding:60px 70px 70px;display:flex;flex-direction:column}
 .x2-legend{display:flex;gap:28px;margin:12px 0 20px}
 .x2-leg-item{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:500;color:var(--navy)}
 .x2-leg-dot{width:22px;height:5px;border-radius:3px}
@@ -104,11 +104,11 @@ td.dim{color:var(--gray);font-weight:400}
 
 /* AREA SLIDES */
 
-/* ENV TABLE ENHANCEMENT */
-#t-env thead tr{background:var(--navy)}
-#t-env thead th{color:#fff;border-bottom:none;font-size:22px}
-#t-env thead th:first-child{border-radius:0}
-#t-env tbody tr:last-child td{border-bottom:none}
+/* TABLE ENHANCEMENT (slides 7 & 9) */
+#t-env thead tr,#t-levels thead tr{background:var(--navy)}
+#t-env thead th,#t-levels thead th{background:var(--navy);color:#fff;border-bottom:none;font-size:22px;padding:22px 24px}
+#t-env tbody td,#t-levels tbody td{background:#fff}
+#t-env tbody tr:last-child td,#t-levels tbody tr:last-child td{border-bottom:none}
 
 /* COPYRIGHT */
 .copyright{position:absolute;bottom:12px;right:20px;font-size:13px;color:#c0ccd9;font-weight:400;letter-spacing:0.2px;font-style:italic}
@@ -224,7 +224,7 @@ td.dim{color:var(--gray);font-weight:400}
   <div class="top-bar"></div>
   <div class="shd" style="padding:60px 0 0"><div class="sub">Worldwide PM jobs</div><div class="ttl">By seniority level</div></div>
   <div class="tbl-wrap">
-    <div style="padding:0 0"><table id="t-levels"><thead><tr><th>Level</th><th>Listings</th><th>MoM</th><th>T6M</th><th>YoY</th></tr></thead><tbody></tbody></table></div>
+    <div style="padding:0 0;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(13,36,73,0.10)"><table id="t-levels" style="border-collapse:separate;border-spacing:0"><thead><tr><th>Level</th><th>Listings</th><th>MoM</th><th>T6M</th><th>YoY</th></tr></thead><tbody></tbody></table></div>
   </div>
   <div class="src" id="s9-src">Source: LinkedIn as of 1 June 2026</div>
 </div>
@@ -240,7 +240,7 @@ td.dim{color:var(--gray);font-weight:400}
       <div class="x2-leg-item"><div class="x2-leg-dot" style="background:#0d2449"></div>2026</div>
     </div>
   </div>
-  <div class="x2-grid" style="padding:0 70px">
+  <div class="x2-grid">
     <div class="x2-cell"><div class="x2-title">Assoc / Jr PM</div><div class="x2-wrap"><canvas id="x2-assoc" width="816" height="694" style="display: block; box-sizing: border-box; height: 347px; width: 408px;"></canvas></div></div>
     <div class="x2-cell"><div class="x2-title">Product Manager</div><div class="x2-wrap"><canvas id="x2-pm" width="816" height="694" style="display: block; box-sizing: border-box; height: 347px; width: 408px;"></canvas></div></div>
     <div class="x2-cell"><div class="x2-title">Senior PM</div><div class="x2-wrap"><canvas id="x2-sr" width="816" height="694" style="display: block; box-sizing: border-box; height: 347px; width: 408px;"></canvas></div></div>
