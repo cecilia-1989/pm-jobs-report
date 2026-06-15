@@ -104,6 +104,9 @@ td.dim{color:var(--gray);font-weight:400}
 
 /* AREA SLIDES */
 
+/* COPYRIGHT */
+.copyright{position:absolute;bottom:12px;right:20px;font-size:13px;color:#c0ccd9;font-weight:400;letter-spacing:0.2px;font-style:italic}
+
 </style>
 </head>
 <body>
@@ -160,8 +163,8 @@ td.dim{color:var(--gray);font-weight:400}
 
     <!-- MoM -->
     <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-right:20px">
-      <div style="font-size:13px;font-weight:700;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">Month over Month</div>
-      <div id="s4-dir" style="font-size:12px;font-weight:600;letter-spacing:0.4px;text-transform:uppercase;margin-bottom:10px;color:#b91c1c">▼ DECLINE VS LAST MONTH</div>
+      <div style="font-size:22px;font-weight:700;color:var(--navy);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px">Month over Month</div>
+      <div id="s4-dir" style="font-size:14px;font-weight:600;letter-spacing:0.4px;text-transform:uppercase;margin-bottom:10px;color:#b91c1c">▼ DECLINE VS LAST MONTH</div>
       <div id="s4-circle" class="pct-circle red" style="width:200px;height:200px;margin:0">
         <span id="s4-num" class="pct-num red" style="font-size:58px">−0.6%</span>
       </div>
@@ -173,8 +176,8 @@ td.dim{color:var(--gray);font-weight:400}
 
     <!-- YoY -->
     <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-left:20px">
-      <div style="font-size:13px;font-weight:700;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">Year over Year</div>
-      <div id="s6-dir" style="font-size:12px;font-weight:600;letter-spacing:0.4px;text-transform:uppercase;margin-bottom:10px;color:#1a7a3c">▲ GROWTH VS LAST YEAR</div>
+      <div style="font-size:22px;font-weight:700;color:var(--navy);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px">Year over Year</div>
+      <div id="s6-dir" style="font-size:14px;font-weight:600;letter-spacing:0.4px;text-transform:uppercase;margin-bottom:10px;color:#1a7a3c">▲ GROWTH VS LAST YEAR</div>
       <div id="s6-circle" class="pct-circle grn" style="width:200px;height:200px;margin:0">
         <span id="s6-num" class="pct-num grn" style="font-size:58px">+7.4%</span>
       </div>
@@ -215,21 +218,9 @@ td.dim{color:var(--gray);font-weight:400}
   <div class="top-bar"></div>
   <div class="shd" style="padding:60px 70px 0"><div class="sub">Worldwide PM jobs</div><div class="ttl">By seniority level</div></div>
   <div class="tbl-wrap">
-    <div style="padding:0 0"><table id="t-levels"><thead><tr><th>Level</th><th>Listings</th><th>MoM</th><th>T6M</th><th>YoY</th></tr></thead><tbody></tbody><tbody><tr><td>Assoc. / Jr. PM</td><td class="dim">555</td>
-      <td class="neg">-3%</td>
-      <td class="neg">-14%</td>
-      <td class="pos">+13%</td></tr></tbody><tbody><tr><td>Product Manager</td><td class="dim">18,962</td>
-      <td class="neg">-0.2%</td>
-      <td class="pos">+5.5%</td>
-      <td class="pos">+6.7%</td></tr></tbody><tbody><tr><td>Senior PM</td><td class="dim">5,237</td>
-      <td class="neg">-1.7%</td>
-      <td class="pos">+6.5%</td>
-      <td class="pos">+9.5%</td></tr></tbody><tbody><tr><td>Product Leader</td><td class="dim">3,962</td>
-      <td class="neg">-3.6%</td>
-      <td class="pos">+3.2%</td>
-      <td class="pos">+15%</td></tr></tbody></table></div>
+    <div style="padding:0 0"><table id="t-levels"><thead><tr><th>Level</th><th>Listings</th><th>MoM</th><th>T6M</th><th>YoY</th></tr></thead><tbody></tbody></table></div>
   </div>
-  <div class="src">Source: LinkedIn as of 1 June 2026</div>
+  <div class="src" id="s9-src">Source: LinkedIn as of 1 June 2026</div>
 </div>
 
 <div class="lbl">Slide 8 — Level Charts 2×2</div>
@@ -256,18 +247,9 @@ td.dim{color:var(--gray);font-weight:400}
   <div class="top-bar"></div>
   <div class="shd" style="padding:60px 70px 0"><div class="sub">Worldwide PM jobs</div><div class="ttl">Remote vs Hybrid vs On-site</div></div>
   <div class="tbl-wrap">
-    <div style="padding:0 0"><table id="t-env"><thead><tr><th>Type</th><th>Listings</th><th>MoM</th><th>T6M</th><th>YoY</th></tr></thead><tbody></tbody><tbody><tr><td>On-site</td><td class="dim">11,324</td>
-      <td class="neg">-0.4%</td>
-      <td class="pos">+3.3%</td>
-      <td class="pos">+2%</td></tr></tbody><tbody><tr><td>Hybrid</td><td class="dim">7,351</td>
-      <td class="neg">-6.2%</td>
-      <td class="pos">+6.1%</td>
-      <td class="pos">+32%</td></tr></tbody><tbody><tr><td>Remote</td><td class="dim">6,016</td>
-      <td class="neg">-5.7%</td>
-      <td class="pos">+4.7%</td>
-      <td class="pos">+2%</td></tr></tbody></table></div>
+    <div style="padding:0 0"><table id="t-env"><thead><tr><th>Type</th><th>Listings</th><th>MoM</th><th>T6M</th><th>YoY</th></tr></thead><tbody></tbody></table></div>
   </div>
-  <div class="src">Source: LinkedIn as of 1 June 2026</div>
+  <div class="src" id="s11-src">Source: LinkedIn as of 1 June 2026</div>
 </div>
 
 <div class="lbl">Slide 10 — Environment Stacked T12M</div>
@@ -778,6 +760,14 @@ function renderAll(){
 
   // hide loading screen
   document.getElementById('loading').style.display='none';
+
+  // inject copyright into every slide
+  document.querySelectorAll('.slide').forEach(slide=>{
+    const cr=document.createElement('div');
+    cr.className='copyright';
+    cr.textContent='© Coach James Gunaca';
+    slide.appendChild(cr);
+  });
 }
 
 // ═══════════════════════════════════════════════════════
