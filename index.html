@@ -433,59 +433,14 @@ td.dim{color:var(--gray);font-weight:400}
 const SHEET_A = '1iUaZPagv0I5_INHE2WjAJCYIUGZqTWyXsw2COaPe73E';
 
 // ═══════════════════════════════════════════════════════
-// FALLBACK DATA (if sheet fetch fails)
-// ═══════════════════════════════════════════════════════
-const FB = {
-  month:'June 2026', prevDate:'4 May 2026', yoyDate:'2 June 2025',
-  wwTotal:'24,754', wwTotalNum:24754, wwMom:-0.6, wwYoy:7.4,
-  wwPrev:'24,895', wwYoyPrev:'23,050',
-  regions:[
-    {n:'United States', t:'11,132', tn:11132, mom:-3.1, yoy:17  },
-    {n:'Europe (EEA)',  t:'4,687',  tn:4687,  mom:-2.6, yoy:-7.4},
-    {n:'APAC',          t:'4,153',  tn:4153,  mom:-0.6, yoy:7.7 },
-    {n:'United Kingdom',t:'1,619',  tn:1619,  mom:4.4,  yoy:26  },
-    {n:'Canada',        t:'1,018',  tn:1018,  mom:-1.5, yoy:32  },
-    {n:'Latin America', t:'851',    tn:851,   mom:-4.4, yoy:9.5 },
-    {n:'Middle East',   t:'820',    tn:820,   mom:-7.7, yoy:-13 },
-  ],
-  levels:[
-    {name:'Assoc. / Jr. PM',list:'555',    mom:-3.0,t6m:-14, yoy:13 },
-    {name:'Product Manager', list:'18,962',mom:-0.2,t6m:5.5, yoy:6.7},
-    {name:'Senior PM',       list:'5,237', mom:-1.7,t6m:6.5, yoy:9.5},
-    {name:'Product Leader',  list:'3,962', mom:-3.6,t6m:3.2, yoy:15 },
-  ],
-  env:[
-    {name:'On-site',list:'11,324',mom:-0.4,t6m:3.3,yoy:2 },
-    {name:'Hybrid', list:'7,351', mom:-6.2,t6m:6.1,yoy:32},
-    {name:'Remote', list:'6,016', mom:-5.7,t6m:4.7,yoy:2 },
-  ],
-  m12:["Jun '25","Jul '25","Aug '25","Sep '25","Oct '25","Nov '25","Dec '25","Jan '26","Feb '26","Mar '26","Apr '26","May '26","Jun '26"],
-  ts:{
-    us:    [9400,8900,9500,9500,9600,10100,10100,9900,11500,11600,9900,11500,11132],
-    apac:  [3870,4250,4080,4080,4120,4100,4100,4010,4380,4380,4180,4160,4153],
-    eea:   [5070,3950,4270,4760,4760,4760,4760,4790,5360,5300,4790,4800,4687],
-    uk:    [1270,1230,1310,1450,1460,1530,1390,1400,1650,1670,1480,1500,1619],
-    ca:    [770,760,815,820,780,800,890,815,840,1090,1020,1040,1018],
-    latam: [780,820,715,705,1050,960,760,760,760,900,910,865,851],
-    me:    [950,750,825,835,940,900,880,880,890,1020,860,885,820],
-    assoc: [490,465,500,555,570,495,490,560,640,635,680,575,555],
-    pm:    [17500,17100,18200,18500,18300,18900,17500,17300,20100,20600,19200,18700,18962],
-    sr:    [4700,4650,4700,5050,4900,5200,4700,4700,5380,5350,5300,5300,5237],
-    ldr:   [3450,3550,3600,4100,4050,3800,3600,3650,4010,4100,4100,4020,3962],
-    onsite:[11010,10020,10500,11300,11300,10950,11010,10510,12400,11570,11310,11360,11324],
-    hybrid:[5570,5590,5610,5700,5700,6800,6920,5820,7510,7490,7490,7840,7351],
-    remote:[5930,4510,4510,5900,5620,5790,5710,5710,6510,6910,5100,6310,6016],
-  }
-};
-
-// ═══════════════════════════════════════════════════════
-// SHEET FETCH
+// HELPERS
 // ═══════════════════════════════════════════════════════
 function pct(v){ if(typeof v==='number')return v; return parseFloat(String(v).replace('%','')); }
 function num(v){ if(typeof v==='number')return v; return parseInt(String(v).replace(/,/g,'')); }
 function fmt(n){ return Number(n).toLocaleString(); }
 
-async function fetchTab(sheetId, tab){
+// Fetch a key-value tab (col A = key, col B = value) → returns plain object
+async function fetchKVTab(sheetId, tab){
   const url=`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(tab)}`;
   const res=await fetch(url);
   const txt=await res.text();
@@ -495,16 +450,144 @@ async function fetchTab(sheetId, tab){
   return map;
 }
 
+// Fetch the Charts V2 tab — rows are labelled series, columns are months
+// Returns { headers: [...monthLabels], rows: { [seriesName]: [...values] } }
+async function fetchChartsV2(sheetId){
+  const url=`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent('Charts V2')}`;
+  const res=await fetch(url);
+  const txt=await res.text();
+  const json=JSON.parse(txt.match(/setResponse\(([\s\S]*)\)/)[1]);
+  const table=json.table;
+
+  // Try to get month headers from table.cols first
+  let headers=table.cols.slice(1).map(c=>c.label||'');
+
+  // If col labels look like generic "Col1","Col2"... or empty, use first data row as headers
+  const hasRealHeaders=headers.length>0 && headers.some(h=>/(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/i.test(h));
+  let dataRows=table.rows;
+  if(!hasRealHeaders && dataRows.length>0){
+    const firstRow=dataRows[0];
+    headers=firstRow.c.slice(1).map(c=>(c&&c.v!=null)?String(c.v):'');
+    dataRows=dataRows.slice(1); // skip header row
+  }
+
+  const rows={};
+  const rows={};
+  dataRows.forEach(r=>{
+    const name=r.c[0]?.v;
+    if(!name || typeof name!=='string') return;
+    // Skip sub-header rows like "Country Totals — Product Manager"
+    if(name.includes('—')) return;
+    rows[name]=r.c.slice(1).map(c=>(c&&c.v!=null)?Number(c.v):null);
+  });
+  return {headers, rows};
+}
+
+// Given a full series array aligned to all months (Apr 2024+),
+// return last N non-null values and their corresponding labels
+function lastN(headers, series, n){
+  const pairs=headers.map((h,i)=>({h,v:series[i]})).filter(p=>p.v!=null);
+  const slice=pairs.slice(-n);
+  return { labels:slice.map(p=>p.h), data:slice.map(p=>p.v) };
+}
+
+// Given a full series, split into calendar year arrays (Jan-Dec, nulls for missing)
+// returns { y2024:[...12], y2025:[...12], y2026:[...12] }
+function splitByYear(headers, series){
+  const monthOrder=['Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'];
+  const janMonths=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const byYear={};
+  headers.forEach((h,i)=>{
+    const v=series[i];
+    // label format: "Apr 2024" or "Apr '24"
+    const m=h.match(/(\w+)\s+(?:20)?(\d{2})/);
+    if(!m) return;
+    const mon=m[1]; const yr=2000+parseInt(m[2],10);
+    if(!byYear[yr]) byYear[yr]=new Array(12).fill(null);
+    const idx=janMonths.indexOf(mon);
+    if(idx>=0) byYear[yr][idx]=v!=null?Number(v):null;
+  });
+  return byYear;
+}
+
+// Show error state on page
+function showError(msg){
+  const el=document.getElementById('loading');
+  el.innerHTML=`<div style="color:#ef4444;font-size:20px;text-align:center;padding:40px;max-width:600px">
+    <div style="font-size:48px;margin-bottom:16px">⚠️</div>
+    <strong>Could not load report data</strong><br><br>
+    ${msg}<br><br>
+    <span style="color:#94a3b8;font-size:15px">Check that the Google Sheet is publicly accessible and try refreshing.</span>
+  </div>`;
+}
+
 async function loadData(){
   try{
-    const tabs=['Worldwide Stats','US Stats','APAC Stats','EEA Stats','UK Stats','Canada Stats','LATAM Stats','Middle East Stats'];
-    const [ww,us,apac,eea,uk,ca,latam,me]=await Promise.all(tabs.map(t=>fetchTab(SHEET_A,t)));
+    const statTabs=['Worldwide Stats','US Stats','APAC Stats','EEA Stats','UK Stats','Canada Stats','LATAM Stats','Middle East Stats'];
+    const [ww,us,apac,eea,uk,ca,latam,me,chartsV2]=await Promise.all([
+      ...statTabs.map(t=>fetchKVTab(SHEET_A,t)),
+      fetchChartsV2(SHEET_A)
+    ]);
 
     const wwTN=num(ww['Worldwide Total']);
     const wwM=pct(ww['Worldwide Change']);
     const wwY=pct(ww['Worldwide Change (YoY)']);
     const month=ww['Month']||'June 2026';
     const prevMon=ww['Previous Month']||'May 2026';
+
+    // ── Chart series from Charts V2 ──────────────────────
+    const h=chartsV2.headers;
+    const r=chartsV2.rows;
+
+    // T12M (last 13 months including current) for area charts
+    const T=13;
+    const ts13=(key)=>lastN(h,r[key]||[],T);
+
+    // Use Worldwide series as reference for T12M labels
+    const wwSeries=r['Worldwide']||[];
+    const wwRef=lastN(h,wwSeries,T);
+    const m12=wwRef.labels;
+
+    // Build ts object — series aligned to same T labels
+    function alignSeries(key){
+      const full=r[key]||[];
+      const pairs=h.map((hh,i)=>({hh,v:full[i]})).filter(p=>p.v!=null);
+      const slice=pairs.slice(-T);
+      return slice.map(p=>p.v);
+    }
+
+    const ts={
+      us:     alignSeries('United States'),
+      apac:   alignSeries('APAC'),
+      eea:    alignSeries('EEA'),
+      uk:     alignSeries('United Kingdom'),
+      ca:     alignSeries('Canada'),
+      latam:  alignSeries('LATAM'),
+      me:     alignSeries('Middle East'),
+      assoc:  alignSeries('Assoc/Jr PM'),
+      pm:     alignSeries('PM'),
+      sr:     alignSeries('Senior PM'),
+      ldr:    alignSeries('Product Leader'),
+      onsite: alignSeries('On-site Total'),
+      hybrid: alignSeries('Hybrid Total'),
+      remote: alignSeries('Remote Total'),
+    };
+
+    // Split-by-year data for Slide 8 (WW 3-year overlay) and Slide 10 (2x2 level)
+    const wwByYear   =splitByYear(h, r['Worldwide']||[]);
+    const assocByYear=splitByYear(h, r['Assoc/Jr PM']||[]);
+    const pmByYear   =splitByYear(h, r['PM']||[]);
+    const srByYear   =splitByYear(h, r['Senior PM']||[]);
+    const ldrByYear  =splitByYear(h, r['Product Leader']||[]);
+
+    // ── Listings for level / env rows ────────────────────
+    // Last value in the series = current month count
+    const lastVal=(key)=>{
+      const arr=r[key]||[];
+      const v=[...arr].reverse().find(x=>x!=null);
+      return v!=null?Number(v):0;
+    };
+    const fmtLast=(key)=>fmt(lastVal(key));
 
     return {
       month, prevDate:`4 ${prevMon}`, yoyDate:'2 June 2025',
@@ -521,21 +604,24 @@ async function loadData(){
         {n:'Middle East',   t:fmt(num(me['Middle East Total'])),tn:num(me['Middle East Total']),mom:pct(me['Middle East Change']),yoy:pct(me['Middle East Change (YoY)'])},
       ],
       levels:[
-        {name:'Assoc. / Jr. PM',list:'555',    mom:pct(ww['Assoc PM Change']),  t6m:pct(ww['Assoc PM Change (T6M)']),  yoy:pct(ww['Assoc PM Change (YoY)']) },
-        {name:'Product Manager', list:'18,962',mom:pct(ww['PM Change']),         t6m:pct(ww['PM Change (T6M)']),         yoy:pct(ww['PM Change (YoY)'])        },
-        {name:'Senior PM',       list:'5,237', mom:pct(ww['Sr PM Change']),      t6m:pct(ww['Sr PM Change (T6M)']),      yoy:pct(ww['Sr PM Change (YoY)'])     },
-        {name:'Product Leader',  list:'3,962', mom:pct(ww['Leader Change']),     t6m:pct(ww['Leader Change (T6M)']),     yoy:pct(ww['Leader Change (YoY)'])    },
+        {name:'Assoc. / Jr. PM',list:fmtLast('Assoc/Jr PM'),  mom:pct(ww['Assoc PM Change']),  t6m:pct(ww['Assoc PM Change (T6M)']),  yoy:pct(ww['Assoc PM Change (YoY)']) },
+        {name:'Product Manager', list:fmtLast('PM'),            mom:pct(ww['PM Change']),         t6m:pct(ww['PM Change (T6M)']),         yoy:pct(ww['PM Change (YoY)'])        },
+        {name:'Senior PM',       list:fmtLast('Senior PM'),     mom:pct(ww['Sr PM Change']),      t6m:pct(ww['Sr PM Change (T6M)']),      yoy:pct(ww['Sr PM Change (YoY)'])     },
+        {name:'Product Leader',  list:fmtLast('Product Leader'),mom:pct(ww['Leader Change']),     t6m:pct(ww['Leader Change (T6M)']),     yoy:pct(ww['Leader Change (YoY)'])    },
       ],
       env:[
-        {name:'On-site',list:'11,324',mom:pct(ww['On-site Change']),t6m:pct(ww['On-site Change (T6M)']),yoy:pct(ww['On-site Change (YoY)'])},
-        {name:'Hybrid', list:'7,351', mom:pct(ww['Hybrid Change']), t6m:pct(ww['Hybrid Change (T6M)']), yoy:pct(ww['Hybrid Change (YoY)']) },
-        {name:'Remote', list:'6,016', mom:pct(ww['Remote Change']), t6m:pct(ww['Remote Change (T6M)']), yoy:pct(ww['Remote Change (YoY)']) },
+        {name:'On-site',list:fmtLast('On-site Total'),mom:pct(ww['On-site Change']),t6m:pct(ww['On-site Change (T6M)']),yoy:pct(ww['On-site Change (YoY)'])},
+        {name:'Hybrid', list:fmtLast('Hybrid Total'), mom:pct(ww['Hybrid Change']), t6m:pct(ww['Hybrid Change (T6M)']), yoy:pct(ww['Hybrid Change (YoY)']) },
+        {name:'Remote', list:fmtLast('Remote Total'),  mom:pct(ww['Remote Change']), t6m:pct(ww['Remote Change (T6M)']), yoy:pct(ww['Remote Change (YoY)']) },
       ],
-      m12:FB.m12, ts:FB.ts
+      m12, ts,
+      // Year split series for slides 8 and 10
+      wwByYear, assocByYear, pmByYear, srByYear, ldrByYear,
     };
   }catch(e){
-    console.warn('Sheet fetch failed — using fallback data',e);
-    return FB;
+    console.error('Sheet fetch failed:', e);
+    showError(`Failed to load data from Google Sheets.<br><code style="font-size:13px;color:#fca5a5">${e.message}</code>`);
+    throw e;
   }
 }
 
@@ -674,12 +760,10 @@ function renderAll(){
   document.getElementById('s7-src').textContent=`${srcBase}, compared to ${D.yoyDate}`;
 
   // S8 WW T12M — calendar year X axis (Jan–Dec), lines + distinct markers
-  // 2024 data: starts April (idx 3) through Dec (idx 11)
-  // 2025 data: full year Jan–Dec
-  // 2026 data: Jan through current month (Jun = idx 5)
-  const ww2024=[null,null,null,21700,22200,23050,22000,21500,21800,23500,24500,25200];
-  const ww2025=[23050,22500,22000,23500,23800,23200,21500,21800,23500,25000,24500,25200];
-  const ww2026=[21800,23500,24800,24200,24895,D.wwTotalNum,null,null,null,null,null,null];
+  // Data from Charts V2 — exact values per year
+  const ww2024=D.wwByYear[2024]||new Array(12).fill(null);
+  const ww2025=D.wwByYear[2025]||new Array(12).fill(null);
+  const ww2026=D.wwByYear[2026]||new Array(12).fill(null);
   new Chart(document.getElementById('c-ww'),{
     type:'line',
     data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],datasets:[
@@ -702,14 +786,13 @@ function renderAll(){
   // S9 level table
   buildTable('t-levels',D.levels,['Level','Listings','MoM','T6M','YoY']);
 
-  // S10 2x2 mini charts
+  // S10 2x2 mini charts — Data from Charts V2
   const x2L=['J','F','M','A','M','J','J','A','S','O','N','D'];
   [
-    // 2025: full year Jan-Dec; 2026: Jan-Jun, nulls for future
-    {id:'x2-assoc',d25:[490,465,500,555,570,495,490,560,640,635,680,575],d26:[560,640,635,680,575,555,null,null,null,null,null,null]},
-    {id:'x2-pm',   d25:[17500,17100,18200,18500,18300,18900,17500,17300,20100,20600,19200,18700],d26:[17300,20100,20600,19200,18700,18962,null,null,null,null,null,null]},
-    {id:'x2-sr',   d25:[4700,4650,4700,5050,4900,5200,4700,4700,5380,5350,5300,5300],d26:[4700,5380,5350,5300,5300,5237,null,null,null,null,null,null]},
-    {id:'x2-ldr',  d25:[3450,3550,3600,4100,4050,3800,3600,3650,4010,4100,4100,4020],d26:[3650,4010,4100,4100,4020,3962,null,null,null,null,null,null]},
+    {id:'x2-assoc',d25:D.assocByYear[2025]||new Array(12).fill(null),d26:D.assocByYear[2026]||new Array(12).fill(null)},
+    {id:'x2-pm',   d25:D.pmByYear[2025]||new Array(12).fill(null),   d26:D.pmByYear[2026]||new Array(12).fill(null)},
+    {id:'x2-sr',   d25:D.srByYear[2025]||new Array(12).fill(null),   d26:D.srByYear[2026]||new Array(12).fill(null)},
+    {id:'x2-ldr',  d25:D.ldrByYear[2025]||new Array(12).fill(null),  d26:D.ldrByYear[2026]||new Array(12).fill(null)},
   ].forEach(def=>{
     new Chart(document.getElementById(def.id),{
       type:'line',
