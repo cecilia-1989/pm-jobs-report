@@ -494,9 +494,10 @@ async function fetchChartsV2(sheetId){
 }
 
 // Given a full series array aligned to all months (Apr 2024+),
-// return last N non-null values and their corresponding labels
+// return last N non-null, non-zero values and their corresponding labels
+// (zeros are future placeholder months with no real data)
 function lastN(headers, series, n){
-  const pairs=headers.map((h,i)=>({h,v:series[i]})).filter(p=>p.v!=null);
+  const pairs=headers.map((h,i)=>({h,v:series[i]})).filter(p=>p.v!=null&&p.v>0);
   const slice=pairs.slice(-n);
   return { labels:slice.map(p=>p.h), data:slice.map(p=>p.v) };
 }
@@ -515,7 +516,7 @@ function splitByYear(headers, series){
     const mon=m[1]; const yr=2000+parseInt(m[2],10);
     if(!byYear[yr]) byYear[yr]=new Array(12).fill(null);
     const idx=janMonths.indexOf(mon);
-    if(idx>=0) byYear[yr][idx]=v!=null?Number(v):null;
+    if(idx>=0) byYear[yr][idx]=v!=null&&Number(v)>0?Number(v):null;
   });
   return byYear;
 }
@@ -561,7 +562,7 @@ async function loadData(){
     // Build ts object — series aligned to same T labels
     function alignSeries(key){
       const full=r[key]||[];
-      const pairs=h.map((hh,i)=>({hh,v:full[i]})).filter(p=>p.v!=null);
+      const pairs=h.map((hh,i)=>({hh,v:full[i]})).filter(p=>p.v!=null&&p.v>0);
       const slice=pairs.slice(-T);
       return slice.map(p=>p.v);
     }
@@ -594,7 +595,7 @@ async function loadData(){
     // Last value in the series = current month count
     const lastVal=(key)=>{
       const arr=r[key]||[];
-      const v=[...arr].reverse().find(x=>x!=null);
+      const v=[...arr].reverse().find(x=>x!=null&&x>0);
       return v!=null?Number(v):0;
     };
     const fmtLast=(key)=>fmt(lastVal(key));
@@ -644,7 +645,7 @@ function fp(v){const n=parseFloat(v);return (n>0?'+':'')+n.toFixed(1)+'%';}
 function pc(v){return v>=0?'pos':'neg';}
 
 function makeArea(id,data){
-  const vals=data.filter(v=>v!=null);
+  const vals=data.filter(v=>v!=null&&v>0);
   const lo=Math.min(...vals), hi=Math.max(...vals);
   const span=hi-lo, pad=span*0.22;
   const yMin=Math.max(0, Math.floor((lo-pad)/100)*100);
