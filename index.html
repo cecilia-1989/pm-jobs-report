@@ -450,35 +450,42 @@ async function fetchKVTab(sheetId, tab){
   return map;
 }
 
-// Fetch the Charts V2 tab — rows are labelled series, columns are months
+// Fetch the Charts V2 tab (by gid) — rows are labelled series, columns are months
+// The header row ("Country") uses Excel serial date numbers → converted to "Mon YYYY" strings
 // Returns { headers: [...monthLabels], rows: { [seriesName]: [...values] } }
 async function fetchChartsV2(sheetId){
-  const url=`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent('Charts V2')}`;
+  // Use gid directly — more reliable than tab name
+  const url=`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=2132846940`;
   const res=await fetch(url);
   const txt=await res.text();
   const json=JSON.parse(txt.match(/setResponse\(([\s\S]*)\)/)[1]);
   const table=json.table;
+  const tableRows=table.rows;
 
-  // Try to get month headers from table.cols first
-  let headers=table.cols.slice(1).map(c=>c.label||'');
-
-  // If col labels look like generic "Col1","Col2"... or empty, use first data row as headers
-  const hasRealHeaders=headers.length>0 && headers.some(h=>/(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/i.test(h));
-  let dataRows=table.rows;
-  if(!hasRealHeaders && dataRows.length>0){
-    const firstRow=dataRows[0];
-    headers=firstRow.c.slice(1).map(c=>(c&&c.v!=null)?String(c.v):'');
-    dataRows=dataRows.slice(1); // skip header row
+  // Row 0 is the date-header row ("Country" label, Excel serials as values)
+  // Convert Excel serial → "Mon YYYY" label
+  const EXCEL_EPOCH=new Date(Date.UTC(1899,11,30));
+  const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  function serialToLabel(serial){
+    const d=new Date(EXCEL_EPOCH.getTime()+Math.round(serial)*86400000);
+    return `${MON[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
   }
 
+  const headerRow=tableRows[0];
+  const allHeaders=headerRow.c.slice(1).map(c=>(c&&c.v!=null)?serialToLabel(c.v):'');
+
+  // Find last column with real data (Worldwide > 0)
+  let lastDataCol=0;
+  const wwRow=tableRows.find(r=>r.c[0]?.v==='Worldwide');
+  if(wwRow) wwRow.c.slice(1).forEach((c,i)=>{ if(c&&c.v&&Number(c.v)>0) lastDataCol=i; });
+
+  const headers=allHeaders.slice(0,lastDataCol+1);
   const rows={};
-  const rows={};
-  dataRows.forEach(r=>{
+  const skipNames=new Set(['Country','Category','Level']);
+  tableRows.slice(1).forEach(r=>{
     const name=r.c[0]?.v;
-    if(!name || typeof name!=='string') return;
-    // Skip sub-header rows like "Country Totals — Product Manager"
-    if(name.includes('—')) return;
-    rows[name]=r.c.slice(1).map(c=>(c&&c.v!=null)?Number(c.v):null);
+    if(!name||typeof name!=='string'||skipNames.has(name)||name.includes('\u2014')||name.includes('—')) return;
+    rows[name]=r.c.slice(1,lastDataCol+2).map(c=>(c&&c.v!=null&&Number(c.v)!==0)?Number(c.v):null);
   });
   return {headers, rows};
 }
@@ -564,19 +571,19 @@ async function loadData(){
       ca:     alignSeries('Canada'),
       latam:  alignSeries('LATAM'),
       me:     alignSeries('Middle East'),
-      assoc:  alignSeries('Assoc/Jr PM'),
-      pm:     alignSeries('PM'),
+      assoc:  alignSeries('Junior PM'),
+      pm:     alignSeries('Product Manager'),
       sr:     alignSeries('Senior PM'),
       ldr:    alignSeries('Product Leader'),
-      onsite: alignSeries('On-site Total'),
-      hybrid: alignSeries('Hybrid Total'),
-      remote: alignSeries('Remote Total'),
+      onsite: alignSeries('On-site'),
+      hybrid: alignSeries('Hybrid'),
+      remote: alignSeries('Remote'),
     };
 
     // Split-by-year data for Slide 8 (WW 3-year overlay) and Slide 10 (2x2 level)
     const wwByYear   =splitByYear(h, r['Worldwide']||[]);
-    const assocByYear=splitByYear(h, r['Assoc/Jr PM']||[]);
-    const pmByYear   =splitByYear(h, r['PM']||[]);
+    const assocByYear=splitByYear(h, r['Junior PM']||[]);
+    const pmByYear   =splitByYear(h, r['Product Manager']||[]);
     const srByYear   =splitByYear(h, r['Senior PM']||[]);
     const ldrByYear  =splitByYear(h, r['Product Leader']||[]);
 
@@ -604,15 +611,15 @@ async function loadData(){
         {n:'Middle East',   t:fmt(num(me['Middle East Total'])),tn:num(me['Middle East Total']),mom:pct(me['Middle East Change']),yoy:pct(me['Middle East Change (YoY)'])},
       ],
       levels:[
-        {name:'Assoc. / Jr. PM',list:fmtLast('Assoc/Jr PM'),  mom:pct(ww['Assoc PM Change']),  t6m:pct(ww['Assoc PM Change (T6M)']),  yoy:pct(ww['Assoc PM Change (YoY)']) },
-        {name:'Product Manager', list:fmtLast('PM'),            mom:pct(ww['PM Change']),         t6m:pct(ww['PM Change (T6M)']),         yoy:pct(ww['PM Change (YoY)'])        },
+        {name:'Assoc. / Jr. PM',list:fmtLast('Junior PM'),     mom:pct(ww['Assoc PM Change']),  t6m:pct(ww['Assoc PM Change (T6M)']),  yoy:pct(ww['Assoc PM Change (YoY)']) },
+        {name:'Product Manager', list:fmtLast('Product Manager'),mom:pct(ww['PM Change']),       t6m:pct(ww['PM Change (T6M)']),         yoy:pct(ww['PM Change (YoY)'])        },
         {name:'Senior PM',       list:fmtLast('Senior PM'),     mom:pct(ww['Sr PM Change']),      t6m:pct(ww['Sr PM Change (T6M)']),      yoy:pct(ww['Sr PM Change (YoY)'])     },
         {name:'Product Leader',  list:fmtLast('Product Leader'),mom:pct(ww['Leader Change']),     t6m:pct(ww['Leader Change (T6M)']),     yoy:pct(ww['Leader Change (YoY)'])    },
       ],
       env:[
-        {name:'On-site',list:fmtLast('On-site Total'),mom:pct(ww['On-site Change']),t6m:pct(ww['On-site Change (T6M)']),yoy:pct(ww['On-site Change (YoY)'])},
-        {name:'Hybrid', list:fmtLast('Hybrid Total'), mom:pct(ww['Hybrid Change']), t6m:pct(ww['Hybrid Change (T6M)']), yoy:pct(ww['Hybrid Change (YoY)']) },
-        {name:'Remote', list:fmtLast('Remote Total'),  mom:pct(ww['Remote Change']), t6m:pct(ww['Remote Change (T6M)']), yoy:pct(ww['Remote Change (YoY)']) },
+        {name:'On-site',list:fmtLast('On-site'),mom:pct(ww['On-site Change']),t6m:pct(ww['On-site Change (T6M)']),yoy:pct(ww['On-site Change (YoY)'])},
+        {name:'Hybrid', list:fmtLast('Hybrid'), mom:pct(ww['Hybrid Change']), t6m:pct(ww['Hybrid Change (T6M)']), yoy:pct(ww['Hybrid Change (YoY)']) },
+        {name:'Remote', list:fmtLast('Remote'),  mom:pct(ww['Remote Change']), t6m:pct(ww['Remote Change (T6M)']), yoy:pct(ww['Remote Change (YoY)']) },
       ],
       m12, ts,
       // Year split series for slides 8 and 10
