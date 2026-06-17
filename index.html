@@ -454,7 +454,6 @@ async function fetchKVTab(sheetId, tab){
 // The header row ("Country") uses Excel serial date numbers → converted to "Mon YYYY" strings
 // Returns { headers: [...monthLabels], rows: { [seriesName]: [...values] } }
 async function fetchChartsV2(sheetId){
-  // Use gid directly — more reliable than tab name
   const url=`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=2132846940`;
   const res=await fetch(url);
   const txt=await res.text();
@@ -462,8 +461,7 @@ async function fetchChartsV2(sheetId){
   const table=json.table;
   const tableRows=table.rows;
 
-  // Row 0 is the date-header row ("Country" label, Excel serials as values)
-  // Convert Excel serial → "Mon YYYY" label
+  // Convert Excel serial date → "Mon YYYY"
   const EXCEL_EPOCH=new Date(Date.UTC(1899,11,30));
   const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   function serialToLabel(serial){
@@ -471,21 +469,26 @@ async function fetchChartsV2(sheetId){
     return `${MON[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
   }
 
+  // Row 0 = date-header row ("Country" label, Excel serials as col values)
   const headerRow=tableRows[0];
   const allHeaders=headerRow.c.slice(1).map(c=>(c&&c.v!=null)?serialToLabel(c.v):'');
 
-  // Find last column with real data (Worldwide > 0)
+  // Find how many months have real data — use Worldwide row as reference
+  // Last col index (0-based among data cols) where Worldwide has a value > 0
   let lastDataCol=0;
   const wwRow=tableRows.find(r=>r.c[0]?.v==='Worldwide');
   if(wwRow) wwRow.c.slice(1).forEach((c,i)=>{ if(c&&c.v&&Number(c.v)>0) lastDataCol=i; });
 
-  const headers=allHeaders.slice(0,lastDataCol+1);
+  // Trim headers to real data range
+  const headers=allHeaders.slice(0, lastDataCol+1);
+
   const rows={};
   const skipNames=new Set(['Country','Category','Level']);
   tableRows.slice(1).forEach(r=>{
     const name=r.c[0]?.v;
-    if(!name||typeof name!=='string'||skipNames.has(name)||name.includes('\u2014')||name.includes('—')) return;
-    rows[name]=r.c.slice(1,lastDataCol+2).map(c=>(c&&c.v!=null&&Number(c.v)!==0)?Number(c.v):null);
+    if(!name||typeof name!=='string'||skipNames.has(name)||name.includes('—')) return;
+    // Take exactly lastDataCol+1 data values; null for missing cells, keep actual values as-is
+    rows[name]=r.c.slice(1, lastDataCol+2).map(c=>(c&&c.v!=null)?Number(c.v):null);
   });
   return {headers, rows};
 }
