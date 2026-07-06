@@ -674,6 +674,7 @@ function makeDivBar(id,labels,vals){
     data:{labels,datasets:[{data:vals,backgroundColor:vals.map(v=>v>=0?'rgba(22,101,52,0.88)':'rgba(185,28,28,0.88)'),borderRadius:6,borderSkipped:false}]},
     options:{
       indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:{duration:0},
+      layout:{padding:{left:110,right:110}},
       plugins:{legend:{display:false},tooltip:{enabled:false}},
       scales:{
         x:{min:-axisMax,max:axisMax,
