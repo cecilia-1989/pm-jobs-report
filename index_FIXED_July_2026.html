@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<!-- saved from url=(0056)file:///Users/ceciliarosas/Downloads/pm_report_v5_1.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>PM Jobs Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#1e293b;font-family:'Poppins',sans-serif;display:flex;flex-direction:column;align-items:center;padding:40px 20px;gap:8px}
+#loading{position:fixed;top:0;left:0;right:0;bottom:0;background:#1e293b;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;color:#94a3b8;font-size:18px;gap:16px}
+.spinner{width:40px;height:40px;border:3px solid #334155;border-top-color:#3b82f6;border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.lbl{color:#64748b;font-size:11px;width:1080px;padding:16px 0 4px}
+.slide{width:1080px;height:1080px;min-width:1080px;min-height:1080px;max-width:1080px;max-height:1080px;background:#fff;position:relative;overflow:hidden;flex-shrink:0}
+:root{--navy:#0d2449;--blue:#2563c7;--green:#1a7a3c;--red:#b91c1c;--gray:#64748b;--light:#f1f5f9}
+.top-bar{position:absolute;top:0;left:0;right:0;height:6px;background:var(--navy)}
+.src{position:absolute;bottom:40px;left:70px;font-size:17px;color:#94a3b8;font-style:italic;font-weight:300}
+
+/* COVER */
+.cover{padding:70px 70px}
+.cover-dash{width:72px;height:6px;background:var(--navy);margin-bottom:40px}
+.cover-h1{font-size:118px;font-weight:900;color:var(--navy);line-height:1;letter-spacing:-3px}
+.cover-h2{font-size:100px;font-weight:700;color:var(--blue);margin-top:24px}
+.cover-meta{font-size:38px;color:var(--gray);font-weight:400;margin-top:20px}
+.cover-star{position:absolute;top:80px;right:70px;color:var(--blue);font-size:30px}
+
+/* BIG NUMBER */
+.bignum{padding:70px 70px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.bn-sup{font-size:26px;color:var(--gray);font-weight:400;margin-top:0}
+.bn-bold{font-size:30px;color:var(--navy);font-weight:700;margin-bottom:48px}
+.bn-num-wrap{background:var(--navy);border-radius:24px;padding:32px 64px;margin:0 0 20px}
+.bn-num{font-size:200px;font-weight:900;color:#ffffff;line-height:1;letter-spacing:-6px}
+.bn-tag{font-size:24px;font-weight:600;color:var(--gray);letter-spacing:2px;text-transform:uppercase;margin-top:8px}
+
+/* HEADER */
+.shd{padding:60px 0 0}
+.shd .sub{font-size:22px;color:var(--gray);font-weight:400;margin-bottom:6px}
+.shd .ttl{font-size:42px;font-weight:700;color:var(--navy);line-height:1.15}
+
+/* REGION TOTAL BARS */
+.bar-list{padding:0 0;margin-top:36px}
+.bar-row{display:flex;align-items:center;margin-bottom:26px}
+.bar-lbl{width:180px;font-size:20px;font-weight:500;color:var(--navy);flex-shrink:0}
+.bar-track{flex:1;height:14px;background:var(--light);border-radius:7px;overflow:hidden}
+.bar-fill{height:100%;border-radius:7px;background:var(--green)}
+.bar-val{width:100px;text-align:right;font-size:20px;font-weight:700;color:var(--navy);flex-shrink:0}
+
+/* PCT SLIDES */
+.pct-slide{padding:70px 70px}
+.pct-dir{display:flex;align-items:center;gap:12px;font-size:19px;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-top:50px;margin-bottom:20px;margin-left:0}
+.pct-circle{width:360px;height:360px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:10px 0 10px 0}
+.pct-circle.red{background:#fef2f2}.pct-circle.grn{background:#f0fdf4}
+.pct-num{font-size:110px;font-weight:900;line-height:1;letter-spacing:-3px}
+.pct-num.red{color:var(--red)}.pct-num.grn{color:var(--green)}
+.pct-sub{font-size:21px;color:var(--gray);font-weight:400;margin-top:12px;margin-left:0}
+
+/* CHART SLIDES */
+.chart-slide{padding:60px 70px 80px;display:flex;flex-direction:column}
+.chart-area{flex:1;position:relative;min-height:0}
+
+/* AREA SLIDES — altura fija para consistencia en newsletter */
+.area-slide{padding:50px 70px 30px;display:flex;flex-direction:column}
+.area-slide .chart-area{height:760px;flex:none}
+
+/* TABLES */
+.tbl-slide{padding:60px 70px;display:flex;flex-direction:column}
+.tbl-slide .shd{padding-bottom:0}
+.tbl-slide .shd .sub{font-size:26px}
+.tbl-slide .shd .ttl{font-size:60px}
+.tbl-wrap{flex:1;display:flex;flex-direction:column;justify-content:center}
+table{width:100%;border-collapse:collapse;margin-top:16px}
+th{font-size:24px;font-weight:600;color:var(--gray);padding:18px 24px;text-align:right;border-bottom:3px solid #e2e8f0}
+th:first-child{text-align:left}
+td{font-size:30px;font-weight:500;padding:36px 24px;border-bottom:1px solid #e2e8f0;text-align:right;color:var(--navy)}
+td:first-child{text-align:left;font-weight:700}
+td.dim{color:var(--gray);font-weight:400}
+.pos{color:#166534!important;font-weight:700!important}
+.neg{color:#991b1b!important;font-weight:700!important}
+
+/* 2x2 */
+.x2-slide{padding:40px 70px 40px;display:flex;flex-direction:column}
+.x2-legend{display:flex;gap:28px;margin:6px 0 10px}
+.x2-leg-item{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:500;color:var(--navy)}
+.x2-leg-dot{width:22px;height:5px;border-radius:3px}
+.x2-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:24px;flex:1}
+.x2-cell{display:flex;flex-direction:column}
+.x2-title{font-size:20px;font-weight:700;color:var(--navy);text-align:center;margin-bottom:6px}
+.x2-wrap{flex:1;position:relative;min-height:0}
+
+/* TAKEAWAY */
+.tkw{padding:90px 70px;display:flex;flex-direction:column;justify-content:center}
+.tkw-tag{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:60px}
+.tkw-body{font-size:86px;font-weight:700;color:var(--navy);line-height:1.25}
+.tkw-num{position:absolute;bottom:40px;right:50px;font-size:260px;font-weight:900;color:#f1f5f9;line-height:1}
+
+/* RESHARE */
+.reshare{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px}
+.rs-circle{width:110px;height:110px;border-radius:50%;border:3px solid var(--blue);display:flex;align-items:center;justify-content:center;color:var(--blue);font-size:40px}
+.rs-h{font-size:52px;font-weight:700;color:var(--navy);text-align:center;line-height:1.2}
+.rs-div{width:56px;height:4px;background:var(--blue);border-radius:2px}
+.rs-name{font-size:30px;font-weight:700;color:var(--blue)}
+.rs-sub{font-size:20px;color:var(--gray)}
+
+/* AREA SLIDES */
+
+/* TABLE ENHANCEMENT (slides 7 & 9) */
+#t-env thead tr,#t-levels thead tr{background:var(--navy)}
+#t-env thead th,#t-levels thead th{background:var(--navy);color:#fff;border-bottom:none;font-size:22px;padding:22px 24px}
+#t-env tbody td,#t-levels tbody td{background:#f8fafc}
+#t-env tbody tr:last-child td,#t-levels tbody tr:last-child td{border-bottom:none}
+
+/* SLIDE 8 — src aligned with copyright */
+#slide-10 .src{bottom:12px}
+
+/* COPYRIGHT */
+.copyright{position:absolute;bottom:12px;right:20px;font-size:13px;color:#c0ccd9;font-weight:400;letter-spacing:0.2px;font-style:italic}
+
+</style>
+</head>
+<body>
+
+<div id="loading" style="display: none;">
+  <div class="spinner"></div>
+  <div>Loading live data from Google Sheets...</div>
+</div>
+
+<!-- SLIDES HTML - all data injected by renderAll() -->
+
+<div class="lbl">Slide 1 — Cover</div>
+<div class="slide cover" id="slide-01">
+  <div class="top-bar"></div><div class="cover-dash"></div>
+  <div class="cover-h1">Product<br>Management</div>
+  <div class="cover-h2">Jobs Report 🌐</div>
+  <div class="cover-meta" id="s1-meta">July 2026</div>
+  <div class="cover-star">✦</div>
+  <div class="src" id="s1-src">Source: LinkedIn as of 6 July 2026</div>
+</div>
+
+<div class="lbl">Slide 2 — Worldwide Total</div>
+<div class="slide bignum" id="slide-02">
+  <div class="top-bar"></div>
+  <div class="bn-sup">Worldwide open roles for</div>
+  <div class="bn-bold">"Product Manager"</div>
+  <div class="bn-num-wrap">
+    <div class="bn-num" id="s2-total">24,754</div>
+  </div>
+  <div class="bn-tag">Total Job Listings</div>
+  <div class="src" id="s2-src">Source: LinkedIn as of 6 July 2026</div>
+</div>
+
+<div class="lbl">Slide 3 — By Region + MoM + YoY</div>
+<div class="slide" id="slide-03" style="display:flex;flex-direction:column">
+  <div class="top-bar"></div>
+
+  <!-- Header -->
+  <div class="shd" style="padding:60px 70px 0">
+    <div class="sub">"Product Manager" jobs</div>
+    <div class="ttl" id="s3-ttl">By region — July 2026</div>
+  </div>
+
+  <!-- Region bars -->
+  <div style="padding:16px 70px 0">
+    <div id="s3-bars"></div>
+  </div>
+
+  <!-- Divider -->
+  <div style="height:1px;background:#f1f5f9;margin:18px 70px 0;flex-shrink:0"></div>
+
+  <!-- Two circles: MoM left, YoY right -->
+  <div style="display:flex;flex:1;padding:16px 70px 72px;gap:0;min-height:0">
+
+    <!-- MoM -->
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-right:20px">
+      <div style="font-size:28px;font-weight:700;color:var(--navy);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px">Month over Month</div>
+      <div id="s4-dir" style="font-size:14px;font-weight:600;letter-spacing:0.4px;text-transform:uppercase;margin-bottom:10px;color:#b91c1c">▼ DECLINE VS LAST MONTH</div>
+      <div id="s4-circle" class="pct-circle red" style="width:200px;height:200px;margin:0">
+        <span id="s4-num" class="pct-num red" style="font-size:58px">−0.6%</span>
+      </div>
+      <div id="s4-sub" style="font-size:13px;color:var(--gray);margin-top:10px;text-align:center;line-height:1.5">24,754 listings<br><span style="font-size:11px">prev. 24,895 (4 May 2026)</span></div>
+    </div>
+
+    <!-- Divider -->
+    <div style="width:1px;background:#f1f5f9;margin:10px 0"></div>
+
+    <!-- YoY -->
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-left:20px">
+      <div style="font-size:28px;font-weight:700;color:var(--navy);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px">Year over Year</div>
+      <div id="s6-dir" style="font-size:14px;font-weight:600;letter-spacing:0.4px;text-transform:uppercase;margin-bottom:10px;color:#1a7a3c">▲ GROWTH VS LAST YEAR</div>
+      <div id="s6-circle" class="pct-circle grn" style="width:200px;height:200px;margin:0">
+        <span id="s6-num" class="pct-num grn" style="font-size:58px">+7.4%</span>
+      </div>
+      <div id="s6-sub" style="font-size:13px;color:var(--gray);margin-top:10px;text-align:center;line-height:1.5">24,754 listings<br><span style="font-size:11px">prev. 23,050 (2 June 2025)</span></div>
+    </div>
+  </div>
+
+  <div class="src" id="s3-src">Source: LinkedIn as of 6 July 2026, compared to 1 June 2026 and 1 July 2025</div>
+</div>
+
+<div class="lbl">Slide 4 — MoM by Region</div>
+<div class="slide chart-slide" id="slide-05">
+  <div class="top-bar"></div>
+  <div class="shd" style="padding:60px 0 32px"><div class="sub">"Product Manager" jobs</div><div class="ttl">Month over Month by Region</div></div>
+  <div class="chart-area"><canvas id="c-mom" role="img" aria-label="MoM by region"></canvas></div>
+  <div class="src" id="s5-src">Source: LinkedIn as of 6 July 2026, compared to 1 June 2026</div>
+</div>
+
+
+<div class="lbl">Slide 5 — YoY by Region</div>
+<div class="slide chart-slide" id="slide-07">
+  <div class="top-bar"></div>
+  <div class="shd" style="padding:60px 0 32px"><div class="sub">"Product Manager" jobs</div><div class="ttl">Year over Year by Region</div></div>
+  <div class="chart-area"><canvas id="c-yoy" role="img" aria-label="YoY by region" width="1504" height="1280" style="display: block; box-sizing: border-box; height: 800px; width: 940px;">YoY chart</canvas></div>
+  <div class="src" id="s7-src">Source: LinkedIn as of 6 July 2026, compared to 2 June 2025</div>
+</div>
+
+<div class="lbl">Slide 6 — Worldwide T12M</div>
+<div class="slide chart-slide" id="slide-08">
+  <div class="top-bar"></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">Worldwide jobs for</div><div class="ttl">"Product Manager"</div></div>
+  <div class="chart-area"><canvas id="c-ww" role="img" aria-label="WW T12M" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;">WW T12M</canvas></div>
+  <div class="src">Source: LinkedIn T12M</div>
+</div>
+
+<div class="lbl">Slide 7 — By Seniority Level</div>
+<div class="slide tbl-slide" id="slide-09">
+  <div class="top-bar"></div>
+  <div class="shd" style="padding:60px 0 0"><div class="sub">Worldwide PM jobs</div><div class="ttl">By seniority level</div></div>
+  <div class="tbl-wrap">
+    <div style="padding:0 0;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(13,36,73,0.10)"><table id="t-levels" style="border-collapse:separate;border-spacing:0"><thead><tr><th>Level</th><th>Listings</th><th>MoM</th><th>T6M</th><th>YoY</th></tr></thead><tbody></tbody></table></div>
+  </div>
+  <div class="src" id="s9-src">Source: LinkedIn as of 6 July 2026</div>
+</div>
+
+<div class="lbl">Slide 8 — Level Charts 2×2</div>
+<div class="slide x2-slide" id="slide-10">
+  <div class="top-bar"></div>
+  <div class="shd" style="padding:50px 0 0">
+    <div class="sub">Worldwide PM jobs</div>
+    <div class="ttl" style="font-size:36px">By level — 2025 vs 2026</div>
+    <div class="x2-legend" style="padding:0;margin-top:6px">
+      <div class="x2-leg-item"><div class="x2-leg-dot" style="background:#4e9af1"></div>2025</div>
+      <div class="x2-leg-item"><div class="x2-leg-dot" style="background:#0d2449"></div>2026</div>
+    </div>
+  </div>
+  <div class="x2-grid" style="max-height:740px">
+    <div class="x2-cell"><div class="x2-title">Assoc / Jr PM</div><div class="x2-wrap"><canvas id="x2-assoc" width="816" height="694" style="display: block; box-sizing: border-box; height: 347px; width: 408px;"></canvas></div></div>
+    <div class="x2-cell"><div class="x2-title">Product Manager</div><div class="x2-wrap"><canvas id="x2-pm" width="816" height="694" style="display: block; box-sizing: border-box; height: 347px; width: 408px;"></canvas></div></div>
+    <div class="x2-cell"><div class="x2-title">Senior PM</div><div class="x2-wrap"><canvas id="x2-sr" width="816" height="694" style="display: block; box-sizing: border-box; height: 347px; width: 408px;"></canvas></div></div>
+    <div class="x2-cell"><div class="x2-title">Product Leader</div><div class="x2-wrap"><canvas id="x2-ldr" width="816" height="694" style="display: block; box-sizing: border-box; height: 347px; width: 408px;"></canvas></div></div>
+  </div>
+  <div class="src">Source: LinkedIn as of 6 July 2026</div>
+</div>
+
+<div class="lbl">Slide 9 — Work Environment</div>
+<div class="slide tbl-slide" id="slide-11">
+  <div class="top-bar"></div>
+  <div class="shd" style="padding:60px 0 0"><div class="sub">Worldwide PM jobs</div><div class="ttl">Remote vs Hybrid vs On-site</div></div>
+  <div class="tbl-wrap">
+    <div style="padding:0 0;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(13,36,73,0.10)"><table id="t-env" style="border-collapse:separate;border-spacing:0"><thead><tr><th>Type</th><th>Listings</th><th>MoM</th><th>T6M</th><th>YoY</th></tr></thead><tbody></tbody></table></div>
+  </div>
+  <div class="src" id="s11-src">Source: LinkedIn as of 6 July 2026</div>
+</div>
+
+<div class="lbl">Slide 10 — Environment Stacked T12M</div>
+<div class="slide chart-slide" id="slide-12">
+  <div class="top-bar"></div>
+  <div class="shd" style="padding:60px 0 8px"><div class="sub">Remote vs Hybrid vs On-site</div><div class="ttl">Worldwide T12M</div></div>
+
+  <div class="chart-area"><canvas id="c-stacked" role="img" aria-label="Env stacked T12M" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;">Env T12M</canvas></div>
+  <div class="src">Source: LinkedIn T12M</div>
+</div>
+
+<div class="lbl">Slide 11 — Key Takeaway #1</div>
+<div class="slide tkw" id="slide-13">
+  <div class="top-bar"></div>
+  <div class="tkw-tag">🌐 Key Takeaway #1</div>
+  <div class="tkw-body" id="tkw1">Worldwide listings<br>down <span style="color:#b91c1c">-0.6%</span> MoM.<br><br>Market is up<br><span style="color:#1a7a3c">+7.4%</span> YoY.</div>
+  <div class="tkw-num">1</div>
+</div>
+
+<div class="lbl">Slide 12 — Key Takeaway #2</div>
+<div class="slide tkw" id="slide-14">
+  <div class="top-bar"></div>
+  <div class="tkw-tag">🌐 Key Takeaway #2</div>
+  <div class="tkw-body" id="tkw2">All levels declined<br>MoM. Leadership<br>fell <span style="color:#b91c1c">-3.6%</span> but is<br>up <span style="color:#1a7a3c">+15%</span> YoY.</div>
+  <div class="tkw-num">2</div>
+</div>
+
+<div class="lbl">Slide 13 — Key Takeaway #3</div>
+<div class="slide tkw" id="slide-15">
+  <div class="top-bar"></div>
+  <div class="tkw-tag">🌐 Key Takeaway #3</div>
+  <div class="tkw-body" id="tkw3">On-site <span style="color:#b91c1c">-0.4%</span> while<br>Hybrid fell <span style="color:#b91c1c">-6.2%</span>.<br><br>Hybrid <span style="color:#1a7a3c">+32%</span> YoY.<br>Remote <span style="color:#1a7a3c">+2%</span> YoY.</div>
+  <div class="tkw-num">3</div>
+</div>
+
+<div class="lbl">Slide 14 — Reshare</div>
+<div class="slide reshare" id="slide-16">
+  <div class="top-bar"></div>
+  <div class="rs-circle">✦</div>
+  <div class="rs-h">Reshare for<br>your network</div>
+  <div class="rs-div"></div>
+  <div class="rs-name">James Gunaca</div>
+  <div class="rs-sub">Follow for more updates</div>
+</div>
+
+<div class="lbl">Slide 15 — United States T12M</div>
+<div class="slide area-slide" id="slide-17">
+  <div class="top-bar"></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">United States jobs for</div><div class="ttl">"Product Manager"</div></div>
+  <div class="chart-area"><canvas id="c-us" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
+  <div class="src">Source: LinkedIn as of 6 July 2026</div>
+</div>
+
+<div class="lbl">Slide 16 — APAC T12M</div>
+<div class="slide area-slide" id="slide-18">
+  <div class="top-bar"></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">APAC jobs for</div><div class="ttl">"Product Manager"</div></div>
+  <div class="chart-area"><canvas id="c-apac" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
+  <div class="src">Source: LinkedIn as of 6 July 2026</div>
+</div>
+
+<div class="lbl">Slide 17 — Europe (EEA) T12M</div>
+<div class="slide area-slide" id="slide-19">
+  <div class="top-bar"></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">Europe (EEA) jobs for</div><div class="ttl">"Product Manager"</div></div>
+  <div class="chart-area"><canvas id="c-eea" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
+  <div class="src">Source: LinkedIn as of 6 July 2026</div>
+</div>
+
+<div class="lbl">Slide 18 — United Kingdom T12M</div>
+<div class="slide area-slide" id="slide-20">
+  <div class="top-bar"></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">United Kingdom jobs for</div><div class="ttl">"Product Manager"</div></div>
+  <div class="chart-area"><canvas id="c-uk" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
+  <div class="src">Source: LinkedIn as of 6 July 2026</div>
+</div>
+
+<div class="lbl">Slide 19 — Canada T12M</div>
+<div class="slide area-slide" id="slide-21">
+  <div class="top-bar"></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">Canada jobs for</div><div class="ttl">"Product Manager"</div></div>
+  <div class="chart-area"><canvas id="c-ca" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
+  <div class="src">Source: LinkedIn as of 6 July 2026</div>
+</div>
+
+<div class="lbl">Slide 20 — Latin America T12M</div>
+<div class="slide area-slide" id="slide-22">
+  <div class="top-bar"></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">Latin America jobs for</div><div class="ttl">"Product Manager"</div></div>
+  <div class="chart-area"><canvas id="c-latam" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
+  <div class="src">Source: LinkedIn as of 6 July 2026</div>
+</div>
+
+<div class="lbl">Slide 21 — Middle East T12M</div>
+<div class="slide area-slide" id="slide-23">
+  <div class="top-bar"></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">Middle East jobs for</div><div class="ttl">"Product Manager"</div></div>
+  <div class="chart-area"><canvas id="c-me" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
+  <div class="src">Source: LinkedIn as of 6 July 2026</div>
+</div>
+
+<div class="lbl">Slide 22 — Assoc / Jr PM T12M</div>
+<div class="slide area-slide" id="slide-24">
+  <div class="top-bar"></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">WW PM jobs by level</div><div class="ttl">Assoc. / Jr. PM</div></div>
+  <div class="chart-area"><canvas id="c-assoc" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
+  <div class="src">Source: LinkedIn as of 6 July 2026</div>
+</div>
+
+<div class="lbl">Slide 23 — Product Manager T12M</div>
+<div class="slide area-slide" id="slide-25">
+  <div class="top-bar"></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">WW PM jobs by level</div><div class="ttl">Product Manager</div></div>
+  <div class="chart-area"><canvas id="c-pm" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
+  <div class="src">Source: LinkedIn as of 6 July 2026</div>
+</div>
+
+<div class="lbl">Slide 24 — Senior PM T12M</div>
+<div class="slide area-slide" id="slide-26">
+  <div class="top-bar"></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">WW PM jobs by level</div><div class="ttl">Senior PM</div></div>
+  <div class="chart-area"><canvas id="c-sr" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
+  <div class="src">Source: LinkedIn as of 6 July 2026</div>
+</div>
+
+<div class="lbl">Slide 25 — Product Leader T12M</div>
+<div class="slide area-slide" id="slide-27">
+  <div class="top-bar"></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">WW PM jobs by level</div><div class="ttl">Product Leader</div></div>
+  <div class="chart-area"><canvas id="c-ldr" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
+  <div class="src">Source: LinkedIn as of 6 July 2026</div>
+</div>
+
+<div class="lbl">Slide 26 — On-site T12M</div>
+<div class="slide area-slide" id="slide-28">
+  <div class="top-bar"></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">WW PM jobs by environment</div><div class="ttl">On-site</div></div>
+  <div class="chart-area"><canvas id="c-onsite" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
+  <div class="src">Source: LinkedIn as of 6 July 2026</div>
+</div>
+
+<div class="lbl">Slide 27 — Hybrid T12M</div>
+<div class="slide area-slide" id="slide-29">
+  <div class="top-bar"></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">WW PM jobs by environment</div><div class="ttl">Hybrid</div></div>
+  <div class="chart-area"><canvas id="c-hybrid" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
+  <div class="src">Source: LinkedIn as of 6 July 2026</div>
+</div>
+
+<div class="lbl">Slide 28 — Remote T12M</div>
+<div class="slide area-slide" id="slide-30">
+  <div class="top-bar"></div>
+  <div class="shd" style="padding:60px 0 20px"><div class="sub">WW PM jobs by environment</div><div class="ttl">Remote</div></div>
+  <div class="chart-area"><canvas id="c-remote" width="1410" height="1218" style="display: block; box-sizing: border-box; height: 812px; width: 940px;"></canvas></div>
+  <div class="src">Source: LinkedIn as of 6 July 2026</div>
+</div>
+
+<div class="lbl">Slide 29 — Back Cover</div>
+<div class="slide cover" id="slide-31">
+  <div class="top-bar"></div><div class="cover-dash"></div>
+  <div class="cover-h1">Product<br>Management</div>
+  <div class="cover-h2">Jobs Report 🌐</div>
+  <div class="cover-star">✦</div>
+  <div class="src" id="s31-src">Source: LinkedIn as of 6 July 2026</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// SHEET CONFIG
+// ═══════════════════════════════════════════════════════
+const SHEET_A = '1iUaZPagv0I5_INHE2WjAJCYIUGZqTWyXsw2COaPe73E';
+
+// ═══════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════
+function pct(v){ if(typeof v==='number')return v; return parseFloat(String(v).replace('%','')); }
+function num(v){ if(typeof v==='number')return v; return parseInt(String(v).replace(/,/g,'')); }
+function fmt(n){ return Number(n).toLocaleString(); }
+
+// Fetch a key-value tab (col A = key, col B = value) → returns plain object
+async function fetchKVTab(sheetId, tab){
+  const url=`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(tab)}`;
+  const res=await fetch(url);
+  const txt=await res.text();
+  const json=JSON.parse(txt.match(/setResponse\(([\s\S]*)\)/)[1]);
+  const map={};
+  json.table.rows.forEach(r=>{ const k=r.c[0]?.v, v=r.c[1]?.v; if(k!=null&&v!=null)map[k]=v; });
+  return map;
+}
+
+// Fetch the Charts V2 tab (by gid) — rows are labelled series, columns are months
+// The header row ("Country") uses Excel serial date numbers → converted to "Mon YYYY" strings
+// Returns { headers: [...monthLabels], rows: { [seriesName]: [...values] } }
+async function fetchChartsV2(sheetId){
+  const url=`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=2132846940`;
+  const res=await fetch(url);
+  const txt=await res.text();
+  const json=JSON.parse(txt.match(/setResponse\(([\s\S]*)\)/)[1]);
+  const table=json.table;
+  const tableRows=table.rows;
+
+  // Convert Excel serial date → "Mon YYYY"
+  const EXCEL_EPOCH=new Date(Date.UTC(1899,11,30));
+  const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  function serialToLabel(serial){
+    const d=new Date(EXCEL_EPOCH.getTime()+Math.round(serial)*86400000);
+    return `${MON[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+  }
+
+  // Row 0 = date-header row ("Country" label, Excel serials as col values)
+  const headerRow=tableRows[0];
+  const allHeaders=headerRow.c.slice(1).map(c=>(c&&c.v!=null)?serialToLabel(c.v):'');
+
+  // Find how many months have real data — use Worldwide row as reference
+  // Last col index (0-based among data cols) where Worldwide has a value > 0
+  let lastDataCol=0;
+  const wwRow=tableRows.find(r=>r.c[0]?.v==='Worldwide');
+  if(wwRow) wwRow.c.slice(1).forEach((c,i)=>{ if(c&&c.v&&Number(c.v)>0) lastDataCol=i; });
+
+  // Trim headers to real data range
+  const headers=allHeaders.slice(0, lastDataCol+1);
+
+  const rows={};
+  const skipNames=new Set(['Country','Category','Level']);
+  tableRows.slice(1).forEach(r=>{
+    const name=r.c[0]?.v;
+    if(!name||typeof name!=='string'||skipNames.has(name)||name.includes('—')) return;
+    // Take exactly lastDataCol+1 data values; null for missing cells, keep actual values as-is
+    rows[name]=r.c.slice(1, lastDataCol+2).map(c=>(c&&c.v!=null)?Number(c.v):null);
+  });
+  return {headers, rows};
+}
+
+// Given a full series array aligned to all months (Apr 2024+),
+// return last N non-null, non-zero values and their corresponding labels
+// (zeros are future placeholder months with no real data)
+function lastN(headers, series, n){
+  const pairs=headers.map((h,i)=>({h,v:series[i]})).filter(p=>p.v!=null&&p.v>0);
+  const slice=pairs.slice(-n);
+  return { labels:slice.map(p=>p.h), data:slice.map(p=>p.v) };
+}
+
+// Given a full series, split into calendar year arrays (Jan-Dec, nulls for missing)
+// returns { y2024:[...12], y2025:[...12], y2026:[...12] }
+function splitByYear(headers, series){
+  const monthOrder=['Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'];
+  const janMonths=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const byYear={};
+  headers.forEach((h,i)=>{
+    const v=series[i];
+    // label format: "Apr 2024" or "Apr '24"
+    const m=h.match(/(\w+)\s+(?:20)?(\d{2})/);
+    if(!m) return;
+    const mon=m[1]; const yr=2000+parseInt(m[2],10);
+    if(!byYear[yr]) byYear[yr]=new Array(12).fill(null);
+    const idx=janMonths.indexOf(mon);
+    if(idx>=0) byYear[yr][idx]=v!=null&&Number(v)>0?Number(v):null;
+  });
+  return byYear;
+}
+
+// Show error state on page
+function showError(msg){
+  const el=document.getElementById('loading');
+  el.innerHTML=`<div style="color:#ef4444;font-size:20px;text-align:center;padding:40px;max-width:600px">
+    <div style="font-size:48px;margin-bottom:16px">⚠️</div>
+    <strong>Could not load report data</strong><br><br>
+    ${msg}<br><br>
+    <span style="color:#94a3b8;font-size:15px">Check that the Google Sheet is publicly accessible and try refreshing.</span>
+  </div>`;
+}
+
+async function loadData(){
+  try{
+    const statTabs=['Worldwide Stats','US Stats','APAC Stats','EEA Stats','UK Stats','Canada Stats','LATAM Stats','Middle East Stats'];
+    const [ww,us,apac,eea,uk,ca,latam,me,chartsV2]=await Promise.all([
+      ...statTabs.map(t=>fetchKVTab(SHEET_A,t)),
+      fetchChartsV2(SHEET_A)
+    ]);
+
+    const wwTN=num(ww['Worldwide Total']);
+    const wwM=pct(ww['Worldwide Change']);
+    const wwY=pct(ww['Worldwide Change (YoY)']);
+    const month=ww['Month']||'July 2026';
+    const prevMon=ww['Previous Month']||'June 2026';
+
+    // ── Chart series from Charts V2 ──────────────────────
+    const h=chartsV2.headers;
+    const r=chartsV2.rows;
+
+    // T12M (last 13 months including current) for area charts
+    const T=13;
+    const ts13=(key)=>lastN(h,r[key]||[],T);
+
+    // Use Worldwide series as reference for T12M labels
+    const wwSeries=r['Worldwide']||[];
+    const wwRef=lastN(h,wwSeries,T);
+    const m12=wwRef.labels;
+
+    // Build ts object — series aligned to same T labels
+    function alignSeries(key){
+      const full=r[key]||[];
+      const pairs=h.map((hh,i)=>({hh,v:full[i]})).filter(p=>p.v!=null&&p.v>0);
+      const slice=pairs.slice(-T);
+      return slice.map(p=>p.v);
+    }
+
+    const ts={
+      us:     alignSeries('United States'),
+      apac:   alignSeries('APAC'),
+      eea:    alignSeries('EEA'),
+      uk:     alignSeries('United Kingdom'),
+      ca:     alignSeries('Canada'),
+      latam:  alignSeries('LATAM'),
+      me:     alignSeries('Middle East'),
+      assoc:  alignSeries('Junior PM'),
+      pm:     alignSeries('Product Manager'),
+      sr:     alignSeries('Senior PM'),
+      ldr:    alignSeries('Product Leader'),
+      onsite: alignSeries('On-site'),
+      hybrid: alignSeries('Hybrid'),
+      remote: alignSeries('Remote'),
+    };
+
+    // Split-by-year data for Slide 8 (WW 3-year overlay) and Slide 10 (2x2 level)
+    const wwByYear   =splitByYear(h, r['Worldwide']||[]);
+    const assocByYear=splitByYear(h, r['Junior PM']||[]);
+    const pmByYear   =splitByYear(h, r['Product Manager']||[]);
+    const srByYear   =splitByYear(h, r['Senior PM']||[]);
+    const ldrByYear  =splitByYear(h, r['Product Leader']||[]);
+
+    // ── Listings for level / env rows ────────────────────
+    // Last value in the series = current month count
+    const lastVal=(key)=>{
+      const arr=r[key]||[];
+      const v=[...arr].reverse().find(x=>x!=null&&x>0);
+      return v!=null?Number(v):0;
+    };
+    const fmtLast=(key)=>fmt(lastVal(key));
+
+    return {
+      month, prevDate:`1 ${prevMon}`, yoyDate:'1 July 2025',
+      wwTotal:fmt(wwTN), wwTotalNum:wwTN, wwMom:wwM, wwYoy:wwY,
+      wwPrev:fmt(Math.round(wwTN/(1+wwM/100))),
+      wwYoyPrev:fmt(Math.round(wwTN/(1+wwY/100))),
+      regions:[
+        {n:'United States', t:fmt(num(us['US Total'])),  tn:num(us['US Total']),  mom:pct(us['US Change']),            yoy:pct(us['US Change (YoY)'])           },
+        {n:'Europe (EEA)',  t:fmt(num(eea['EEA Total'])), tn:num(eea['EEA Total']),mom:pct(eea['EEA Change']),          yoy:pct(eea['EEA Change (YoY)'])          },
+        {n:'APAC',          t:fmt(num(apac['APAC Total'])),tn:num(apac['APAC Total']),mom:pct(apac['APAC Change']),     yoy:pct(apac['APAC Change (YoY)'])        },
+        {n:'United Kingdom',t:fmt(num(uk['UK Total'])),   tn:num(uk['UK Total']),  mom:pct(uk['UK Change']),            yoy:pct(uk['UK Change (YoY)'])            },
+        {n:'Canada',        t:fmt(num(ca['Canada Total'])),tn:num(ca['Canada Total']),mom:pct(ca['Canada Change']),     yoy:pct(ca['Canada Change (YoY)'])        },
+        {n:'Latin America', t:fmt(num(latam['LATAM Total'])),tn:num(latam['LATAM Total']),mom:pct(latam['LATAM Change']),yoy:pct(latam['LATAM Change (YoY)'])    },
+        {n:'Middle East',   t:fmt(num(me['Middle East Total'])),tn:num(me['Middle East Total']),mom:pct(me['Middle East Change']),yoy:pct(me['Middle East Change (YoY)'])},
+      ],
+      levels:[
+        {name:'Assoc. / Jr. PM',list:fmtLast('Junior PM'),     mom:pct(ww['Assoc PM Change']),  t6m:pct(ww['Assoc PM Change (T6M)']),  yoy:pct(ww['Assoc PM Change (YoY)']) },
+        {name:'Product Manager', list:fmtLast('Product Manager'),mom:pct(ww['PM Change']),       t6m:pct(ww['PM Change (T6M)']),         yoy:pct(ww['PM Change (YoY)'])        },
+        {name:'Senior PM',       list:fmtLast('Senior PM'),     mom:pct(ww['Sr PM Change']),      t6m:pct(ww['Sr PM Change (T6M)']),      yoy:pct(ww['Sr PM Change (YoY)'])     },
+        {name:'Product Leader',  list:fmtLast('Product Leader'),mom:pct(ww['Leader Change']),     t6m:pct(ww['Leader Change (T6M)']),     yoy:pct(ww['Leader Change (YoY)'])    },
+      ],
+      env:[
+        {name:'On-site',list:fmtLast('On-site'),mom:pct(ww['On-site Change']),t6m:pct(ww['On-site Change (T6M)']),yoy:pct(ww['On-site Change (YoY)'])},
+        {name:'Hybrid', list:fmtLast('Hybrid'), mom:pct(ww['Hybrid Change']), t6m:pct(ww['Hybrid Change (T6M)']), yoy:pct(ww['Hybrid Change (YoY)']) },
+        {name:'Remote', list:fmtLast('Remote'),  mom:pct(ww['Remote Change']), t6m:pct(ww['Remote Change (T6M)']), yoy:pct(ww['Remote Change (YoY)']) },
+      ],
+      m12, ts,
+      // Year split series for slides 8 and 10
+      wwByYear, assocByYear, pmByYear, srByYear, ldrByYear,
+    };
+  }catch(e){
+    console.error('Sheet fetch failed:', e);
+    showError(`Failed to load data from Google Sheets.<br><code style="font-size:13px;color:#fca5a5">${e.message}</code>`);
+    throw e;
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// CHART HELPERS
+// ═══════════════════════════════════════════════════════
+Chart.defaults.font.family="'Poppins',sans-serif";
+
+function fp(v){const n=parseFloat(v);return (n>0?'+':'')+n.toFixed(1)+'%';}
+function pc(v){return v>=0?'pos':'neg';}
+
+function makeArea(id,data){
+  const vals=data.filter(v=>v!=null&&v>0);
+  const lo=Math.min(...vals), hi=Math.max(...vals);
+  const span=hi-lo, pad=span*0.22;
+  const yMin=Math.max(0, Math.floor((lo-pad)/100)*100);
+  new Chart(document.getElementById(id),{
+    type:'line',
+    data:{labels:D.m12,datasets:[{data,fill:true,backgroundColor:'rgba(13,36,73,0.82)',
+      borderColor:'#0d2449',borderWidth:2.5,tension:0.35,pointRadius:3,pointBackgroundColor:'#0d2449',spanGaps:true}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:15},color:'#64748b',maxRotation:40,minRotation:30}},
+        y:{min:yMin,grid:{color:'#f1f5f9'},border:{display:false},ticks:{font:{size:15},color:'#64748b',callback:v=>v.toLocaleString()}}
+      }
+    }
+  });
+}
+
+function makeDivBar(id,labels,vals){
+  const maxA=Math.max(...vals.map(Math.abs));
+  // Round up to a clean step so axis is symmetric: e.g. maxA=9.1 → step=5 → axis ±10
+  const rawStep=maxA/3;
+  const mag=Math.pow(10,Math.floor(Math.log10(rawStep)));
+  const step=Math.ceil(rawStep/mag)*mag;
+  const axisMax=Math.ceil(maxA/step)*step;
+  new Chart(document.getElementById(id),{
+    type:'bar',
+    data:{labels,datasets:[{data:vals,backgroundColor:vals.map(v=>v>=0?'rgba(22,101,52,0.88)':'rgba(185,28,28,0.88)'),borderRadius:6,borderSkipped:false}]},
+    options:{
+      indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:{duration:0},
+      layout:{padding:{left:110,right:110}},
+      plugins:{legend:{display:false},tooltip:{enabled:false}},
+      scales:{
+        x:{min:-axisMax,max:axisMax,
+           grid:{color:ctx=>ctx.tick.value===0?'#0d2449':'#f1f5f9',lineWidth:ctx=>ctx.tick.value===0?3:1},
+           border:{display:false},
+           ticks:{font:{size:18,family:'Poppins,sans-serif'},color:'#94a3b8',stepSize:step,
+                  callback:v=>v===0?'0':(v>0?'+':'')+v+'%'}},
+        y:{grid:{display:false},border:{display:false},
+           ticks:{font:{size:22,family:'Poppins,sans-serif',weight:'600'},color:'#0d2449',padding:8}}
+      }
+    },
+    plugins:[{id:'vl',afterDatasetsDraw(c){
+      const {ctx,data}=c; ctx.save();
+      c.getDatasetMeta(0).data.forEach((bar,i)=>{
+        const v=data.datasets[0].data[i],isP=v>=0;
+        const lbl=(v>0?'+':v<0?'-':'')+Math.abs(v).toFixed(1)+'%';
+        ctx.fillStyle=isP?'#166534':'#991b1b';
+        ctx.font='700 19px Poppins,sans-serif';
+        ctx.textAlign=isP?'left':'right';
+        ctx.textBaseline='middle';
+        ctx.fillText(lbl,isP?bar.x+10:bar.x-10,bar.y);
+      });
+      ctx.restore();
+    }}]
+  });
+}
+
+function buildTable(id,rows,cols){
+  const t=document.getElementById(id);
+  t.innerHTML=`<thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>`;
+  rows.forEach(r=>{
+    t.innerHTML+=`<tr><td>${r.name}</td><td class="dim">${r.list}</td>
+      <td class="${pc(r.mom)}">${fp(r.mom)}</td>
+      <td class="${pc(r.t6m)}">${fp(r.t6m)}</td>
+      <td class="${pc(r.yoy)}">${fp(r.yoy)}</td></tr>`;
+  });
+  t.innerHTML+='</tbody>';
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER ALL
+// ═══════════════════════════════════════════════════════
+let D; // global data
+
+function renderAll(){
+  const srcBase=`Source: LinkedIn as of 6 ${D.month}`;
+
+  // S1 & S31
+  document.getElementById('s1-meta').textContent=`${D.month}`;
+  document.getElementById('s1-src').textContent=srcBase;
+  document.getElementById('s31-src').textContent=srcBase;
+
+  // S2
+  document.getElementById('s2-total').textContent=D.wwTotal;
+  document.getElementById('s2-src').textContent=srcBase;
+
+  // S3 — By Region bars + MoM circle (left) + YoY circle (right)
+  document.getElementById('s3-ttl').textContent=`By region — ${D.month}`;
+  document.getElementById('s3-src').textContent=`${srcBase}, compared to ${D.prevDate} and ${D.yoyDate}`;
+  const maxTn=Math.max(...D.regions.map(r=>r.tn));
+  const s3=document.getElementById('s3-bars'); s3.innerHTML='';
+  D.regions.forEach(r=>{
+    s3.innerHTML+=`<div class="bar-row" style="margin-bottom:18px">
+      <div class="bar-lbl">${r.n}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(r.tn/maxTn)*100}%"></div></div>
+      <div class="bar-val">${r.t}</div>
+    </div>`;
+  });
+  // MoM circle
+  const mPos=D.wwMom>=0;
+  document.getElementById('s4-dir').textContent=(mPos?'▲ GROWTH VS LAST MONTH':'▼ DECLINE VS LAST MONTH');
+  document.getElementById('s4-dir').style.color=mPos?'#1a7a3c':'#b91c1c';
+  document.getElementById('s4-circle').className='pct-circle '+(mPos?'grn':'red');
+  document.getElementById('s4-num').className='pct-num '+(mPos?'grn':'red');
+  document.getElementById('s4-num').style.fontSize='58px';
+  document.getElementById('s4-num').textContent=(mPos?'+':'−')+Math.abs(D.wwMom).toFixed(1)+'%';
+  document.getElementById('s4-sub').innerHTML=`${D.wwTotal} listings<br><span style="font-size:11px">prev. ${D.wwPrev} (${D.prevDate})</span>`;
+  // YoY circle
+  const yPos=D.wwYoy>=0;
+  document.getElementById('s6-dir').textContent=(yPos?'▲ GROWTH VS LAST YEAR':'▼ DECLINE VS LAST YEAR');
+  document.getElementById('s6-dir').style.color=yPos?'#1a7a3c':'#b91c1c';
+  document.getElementById('s6-circle').className='pct-circle '+(yPos?'grn':'red');
+  document.getElementById('s6-num').className='pct-num '+(yPos?'grn':'red');
+  document.getElementById('s6-num').style.fontSize='58px';
+  document.getElementById('s6-num').textContent=(yPos?'+':'−')+Math.abs(D.wwYoy).toFixed(1)+'%';
+  document.getElementById('s6-sub').innerHTML=`${D.wwTotal} listings<br><span style="font-size:11px">prev. ${D.wwYoyPrev} (${D.yoyDate})</span>`;
+
+  // S4 (slide-05) — MoM by region chart
+  const momS=[...D.regions].sort((a,b)=>b.mom-a.mom);
+  makeDivBar('c-mom',momS.map(r=>r.n),momS.map(r=>r.mom));
+  document.getElementById('s5-src').textContent=`${srcBase}, compared to ${D.prevDate}`;
+  // S7 YoY by region
+  const yoyS=[...D.regions].sort((a,b)=>b.yoy-a.yoy);
+  makeDivBar('c-yoy',yoyS.map(r=>r.n),yoyS.map(r=>r.yoy));
+  document.getElementById('s7-src').textContent=`${srcBase}, compared to ${D.yoyDate}`;
+
+  // S8 WW T12M — calendar year X axis (Jan–Dec), lines + distinct markers
+  // Data from Charts V2 — exact values per year
+  const ww2024=D.wwByYear[2024]||new Array(12).fill(null);
+  const ww2025=D.wwByYear[2025]||new Array(12).fill(null);
+  const ww2026=D.wwByYear[2026]||new Array(12).fill(null);
+  new Chart(document.getElementById('c-ww'),{
+    type:'line',
+    data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],datasets:[
+      {label:'2024',data:ww2024,borderColor:'#93c5fd',backgroundColor:'transparent',borderWidth:2,
+       tension:0.35,pointRadius:4,pointStyle:'triangle',pointBackgroundColor:'#93c5fd',spanGaps:false},
+      {label:'2025',data:ww2025,borderColor:'#3b82f6',backgroundColor:'transparent',borderWidth:2,
+       tension:0.35,pointRadius:4,pointStyle:'rect',pointBackgroundColor:'#3b82f6',spanGaps:false},
+      {label:'2026',data:ww2026,borderColor:'#0d2449',backgroundColor:'transparent',borderWidth:3,
+       tension:0.35,pointRadius:4,pointStyle:'circle',pointBackgroundColor:'#0d2449',spanGaps:false},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:'bottom',labels:{font:{size:16,weight:'600'},padding:24,usePointStyle:true,pointStyleWidth:20}}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:14,weight:'600'},color:'#64748b',maxRotation:0}},
+        y:{grid:{color:'#f1f5f9'},border:{display:false},ticks:{font:{size:16,weight:'600'},color:'#64748b',callback:v=>v.toLocaleString()}}
+      }
+    }
+  });
+
+  // S9 level table
+  buildTable('t-levels',D.levels,['Level','Listings','MoM','T6M','YoY']);
+
+  // S10 2x2 mini charts — Data from Charts V2
+  const x2L=['J','F','M','A','M','J','J','A','S','O','N','D'];
+  [
+    {id:'x2-assoc',d25:D.assocByYear[2025]||new Array(12).fill(null),d26:D.assocByYear[2026]||new Array(12).fill(null)},
+    {id:'x2-pm',   d25:D.pmByYear[2025]||new Array(12).fill(null),   d26:D.pmByYear[2026]||new Array(12).fill(null)},
+    {id:'x2-sr',   d25:D.srByYear[2025]||new Array(12).fill(null),   d26:D.srByYear[2026]||new Array(12).fill(null)},
+    {id:'x2-ldr',  d25:D.ldrByYear[2025]||new Array(12).fill(null),  d26:D.ldrByYear[2026]||new Array(12).fill(null)},
+  ].forEach(def=>{
+    new Chart(document.getElementById(def.id),{
+      type:'line',
+      data:{labels:x2L,datasets:[
+        {data:def.d25,borderColor:'#4e9af1',backgroundColor:'transparent',fill:false,borderWidth:2,
+         tension:0.35,pointRadius:3,pointStyle:'triangle',pointBackgroundColor:'#4e9af1',spanGaps:true},
+        {data:def.d26,borderColor:'#0d2449',backgroundColor:'transparent',fill:false,borderWidth:2.5,
+         tension:0.35,pointRadius:3,pointStyle:'circle',pointBackgroundColor:'#0d2449',spanGaps:true},
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+        scales:{
+          x:{grid:{display:false},ticks:{font:{size:11,weight:'600'},color:'#94a3b8'}},
+          y:{grid:{color:'#f1f5f9'},border:{display:false},ticks:{font:{size:11},color:'#94a3b8',callback:v=>v.toLocaleString()}}
+        }
+      }
+    });
+  });
+
+  // S11 env table
+  buildTable('t-env',D.env,['Type','Listings','MoM','T6M','YoY']);
+
+  // S12 — line chart (not stacked area), T12M labels matching ts arrays
+  new Chart(document.getElementById('c-stacked'),{
+    type:'line',
+    data:{labels:D.m12,datasets:[
+      {label:'On-site',data:D.ts.onsite,fill:false,borderColor:'#0d2449',borderWidth:2.5,
+       tension:0.35,pointRadius:3,pointStyle:'circle',pointBackgroundColor:'#0d2449'},
+      {label:'Hybrid', data:D.ts.hybrid,fill:false,borderColor:'#2563c7',borderWidth:2.5,
+       tension:0.35,pointRadius:3,pointStyle:'triangle',pointBackgroundColor:'#2563c7'},
+      {label:'Remote', data:D.ts.remote,fill:false,borderColor:'#52a0c7',borderWidth:2.5,
+       tension:0.35,pointRadius:3,pointStyle:'rect',pointBackgroundColor:'#52a0c7'},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:'bottom',labels:{font:{size:14,weight:'600'},padding:20,usePointStyle:true,pointStyleWidth:16}}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:14,weight:'600'},color:'#64748b',maxRotation:0}},
+        y:{grid:{color:'#f1f5f9'},border:{display:false},ticks:{font:{size:16,weight:'600'},color:'#64748b',callback:v=>v.toLocaleString()}}
+      }
+    }
+  });
+
+  // S13-15 takeaways (live numbers)
+  const _w=(v,pos,neg)=>parseFloat(v)>=0?pos:neg;
+  const _c=v=>parseFloat(v)>=0?'#1a7a3c':'#b91c1c';
+  document.getElementById('tkw1').innerHTML=
+    `Worldwide listings<br>${_w(D.wwMom,'up','down')} <span style="color:${_c(D.wwMom)}">${fp(D.wwMom)}</span> MoM.<br><br>Market is ${_w(D.wwYoy,'up','down')}<br><span style="color:${_c(D.wwYoy)}">${fp(D.wwYoy)}</span> YoY.`;
+  document.getElementById('tkw2').innerHTML=
+    `Senior PM ${_w(D.levels[2].mom,'up','down')} <span style="color:${_c(D.levels[2].mom)}">${fp(D.levels[2].mom)}</span> MoM.<br><br>Leadership ${_w(D.levels[3].mom,'up','down')} <span style="color:${_c(D.levels[3].mom)}">${fp(D.levels[3].mom)}</span>,<br>${_w(D.levels[3].yoy,'up','down')} <span style="color:${_c(D.levels[3].yoy)}">${fp(D.levels[3].yoy)}</span> YoY.`;
+  document.getElementById('tkw3').innerHTML=
+    `On-site ${_w(D.env[0].mom,'up','down')} <span style="color:${_c(D.env[0].mom)}">${fp(D.env[0].mom)}</span>,<br>Hybrid ${_w(D.env[1].mom,'up','down')} <span style="color:${_c(D.env[1].mom)}">${fp(D.env[1].mom)}</span>.<br><br>Hybrid <span style="color:${_c(D.env[1].yoy)}">${fp(D.env[1].yoy)}</span> YoY.<br>Remote <span style="color:${_c(D.env[2].yoy)}">${fp(D.env[2].yoy)}</span> YoY.`;
+
+  // S17-30 area charts
+  makeArea('c-us',   D.ts.us);    makeArea('c-apac',  D.ts.apac);
+  makeArea('c-eea',  D.ts.eea);   makeArea('c-uk',    D.ts.uk);
+  makeArea('c-ca',   D.ts.ca);    makeArea('c-latam', D.ts.latam);
+  makeArea('c-me',   D.ts.me);    makeArea('c-assoc', D.ts.assoc);
+  makeArea('c-pm',   D.ts.pm);    makeArea('c-sr',    D.ts.sr);
+  makeArea('c-ldr',  D.ts.ldr);   makeArea('c-onsite',D.ts.onsite);
+  makeArea('c-hybrid',D.ts.hybrid); makeArea('c-remote',D.ts.remote);
+
+  // hide loading screen
+  document.getElementById('loading').style.display='none';
+
+  // inject copyright into every slide
+  document.querySelectorAll('.slide').forEach(slide=>{
+    const cr=document.createElement('div');
+    cr.className='copyright';
+    cr.textContent='© Coach James Gunaca';
+    slide.appendChild(cr);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════════
+loadData().then(data=>{ D=data; renderAll(); });
+</script>
+
+
+</body></html>
